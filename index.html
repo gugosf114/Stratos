@@ -959,7 +959,7 @@ section {
 }
 
 /* ═══════════════════════════════════════════
-   RESPONSIVE
+   RESPONSIVE — Tablet
    ═══════════════════════════════════════════ */
 @media (max-width: 1024px) {
   section { padding: 100px 40px; }
@@ -971,18 +971,167 @@ section {
   .nav { padding: 20px 30px; }
   .nav-links { display: none; }
   .cta-section { padding: 100px 40px; }
+  .about-image { height: 320px; }
 }
 
+/* ═══════════════════════════════════════════
+   RESPONSIVE — Mobile
+   ═══════════════════════════════════════════ */
 @media (max-width: 640px) {
-  section { padding: 80px 24px; }
-  .services-grid { grid-template-columns: 1fr; }
-  .hero { padding: 140px 24px 100px; }
-  .hero-title { letter-spacing: 4px; }
-  .cta-section { padding: 80px 24px; }
-  .footer { padding: 60px 24px; }
-  .notify-form { flex-direction: column; }
-  .notify-input { border-right: 1px solid var(--gray-700); border-bottom: none; }
-  .cta-features { flex-direction: column; align-items: center; gap: 16px; }
+  section { padding: 72px 20px; }
+
+  /* Banner */
+  .construction-banner {
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 7px 12px;
+  }
+
+  /* Nav */
+  .nav {
+    top: 31px;
+    padding: 16px 20px;
+  }
+  .nav-brand {
+    font-size: 15px;
+    letter-spacing: 3px;
+  }
+  .nav-links { display: none; }
+
+  /* Hero */
+  .hero {
+    padding: 120px 20px 80px;
+    min-height: 100svh;
+  }
+  .hero-coming-soon {
+    font-size: clamp(24px, 7vw, 36px);
+    margin-bottom: 20px;
+    text-underline-offset: 8px;
+    letter-spacing: 2px;
+  }
+  .hero-wings { margin-bottom: 24px; }
+  .wing-line { width: 50px; }
+  .hero-wings svg { width: 22px; height: 22px; }
+  .hero-title {
+    font-size: clamp(40px, 12vw, 64px);
+    letter-spacing: 5px;
+  }
+  .hero-sub {
+    font-size: 11px;
+    letter-spacing: 4px;
+    margin-bottom: 36px;
+  }
+  .hero-tagline {
+    font-size: 16px;
+    padding: 0 10px;
+  }
+  .hero-locations {
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 48px;
+  }
+  .hero-cta {
+    padding: 16px 40px;
+    font-size: 10px;
+    letter-spacing: 3px;
+  }
+
+  /* About */
+  .about-content { gap: 32px; }
+  .about-text p { font-size: 15px; }
+  .about-image { height: 260px; }
+
+  /* Section titles */
+  .section-title {
+    font-size: clamp(28px, 7vw, 40px);
+  }
+  .section-subtitle {
+    font-size: 15px;
+  }
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+  }
+
+  /* Locations */
+  .airport-card { padding: 32px 24px; }
+  .airport-code {
+    font-size: 40px;
+    letter-spacing: 4px;
+  }
+  .airport-name {
+    font-size: 11px;
+    margin-bottom: 24px;
+  }
+  .airport-stats li { font-size: 14px; }
+  .combined-stat { padding: 32px 20px; }
+  .combined-number {
+    font-size: 48px;
+    letter-spacing: 2px;
+  }
+  .combined-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+  }
+
+  /* Services */
+  .services-grid { grid-template-columns: 1fr; gap: 16px; }
+  .service-card {
+    padding: 32px 24px;
+  }
+  .service-card h3 { font-size: 19px; }
+  .service-card p { font-size: 13px; }
+  .services-note { font-size: 13px; padding: 20px 16px; }
+
+  /* Why Stratos */
+  .why-grid { grid-template-columns: 1fr; max-width: 100%; gap: 16px; }
+  .why-card { padding: 32px 24px; }
+  .why-card h3 { font-size: 19px; }
+  .why-card p { font-size: 13px; }
+
+  /* Compliance */
+  .compliance-col h3 { font-size: 20px; }
+  .compliance-list li {
+    font-size: 14px;
+    padding: 14px 16px;
+  }
+
+  /* CTA */
+  .cta-section { padding: 72px 20px; }
+  .cta-coming {
+    font-size: clamp(32px, 8vw, 48px);
+    letter-spacing: 4px;
+  }
+  .cta-message { font-size: 17px; }
+  .cta-features {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .cta-feature { font-size: 11px; }
+  .notify-form {
+    flex-direction: column;
+    max-width: 100%;
+  }
+  .notify-input {
+    border-right: 1px solid var(--gray-700);
+    border-bottom: none;
+    padding: 16px 20px;
+  }
+  .notify-btn {
+    padding: 16px 24px;
+  }
+
+  /* Footer */
+  .footer { padding: 56px 20px; }
+  .footer-brand {
+    font-size: 18px;
+    letter-spacing: 4px;
+  }
+  .footer-locations {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
 }
 </style>
 </head>
