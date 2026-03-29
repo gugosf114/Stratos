@@ -1,0 +1,21 @@
+{
+  "name": "Stratos Aviation Detailing",
+  "short_name": "Stratos",
+  "description": "Premium Private Jet Detailing — Los Angeles",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B1A0B",
+  "theme_color": "#C6A24B",
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
