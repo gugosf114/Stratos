@@ -15,12 +15,12 @@
   --gold-light: #D4B86A;
   --gold-pale: #E8D5A0;
   --gold-dark: #9B7E2F;
-  --black: #0A0A0A;
-  --black-light: #111111;
-  --black-card: #141414;
-  --gray-900: #1E1E1E;
-  --gray-800: #2A2A2A;
-  --gray-700: #3A3A3A;
+  --black: #0B1A0B;
+  --black-light: #0E200E;
+  --black-card: #122412;
+  --gray-900: #162B16;
+  --gray-800: #1E351E;
+  --gray-700: #2A4A2A;
   --gray-500: #6B6B6B;
   --gray-400: #8A8A8A;
   --gray-300: #A0A0A0;
@@ -457,8 +457,8 @@ section {
 
 .location-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
   margin-top: 64px;
 }
 
@@ -467,7 +467,7 @@ section {
   border: 1px solid var(--gray-800);
   position: relative;
   overflow: hidden;
-  background: rgba(10, 10, 10, 0.7);
+  background: rgba(11, 26, 11, 0.7);
   backdrop-filter: blur(8px);
   transition: border-color 0.4s ease;
 }
@@ -1051,10 +1051,10 @@ section {
   <div class="hero-content">
     <img src="images/logo.png" alt="Stratos Aviation Detailing" class="hero-logo">
     <p class="hero-coming-soon">Coming Soon</p>
-    <p class="hero-message">We're preparing to bring a new level of aviation detailing to Silicon Valley. Be the first to know when we launch.</p>
+    <p class="hero-message">We're preparing to bring a new level of aviation detailing to Los Angeles. Be the first to know when we launch.</p>
 
     <div class="hero-features">
-      <div class="hero-feature"><div class="dot"></div> HWD &amp; PAO Service</div>
+      <div class="hero-feature"><div class="dot"></div> LA Area Airports</div>
       <div class="hero-feature"><div class="dot"></div> 24/7 Mobile</div>
       <div class="hero-feature"><div class="dot"></div> FAA-Compliant</div>
       <div class="hero-feature"><div class="dot"></div> Fully Insured</div>
@@ -1073,7 +1073,7 @@ section {
     <div class="about-text reveal reveal-delay-2">
       <p>Your aircraft is more than transportation &mdash; it is a <strong>significant asset and a statement of excellence</strong>. At Stratos, we deliver elite detailing services for private and corporate clients, combining advanced preservation techniques with uncompromising craftsmanship.</p>
       <p>Every service uses <strong>FAA-compliant premium products</strong> applied by trained aviation specialists. We come to the aircraft &mdash; owners never wait.</p>
-      <p>Stratos is setting the new standard for aviation detailing in Silicon Valley, bringing <strong>reliability, professionalism, and precision</strong> to an underserved market.</p>
+      <p>Stratos is setting the new standard for aviation detailing in Los Angeles, bringing <strong>reliability, professionalism, and precision</strong> to an underserved market.</p>
     </div>
 
     <div class="about-image reveal reveal-delay-3">
@@ -1087,36 +1087,34 @@ section {
   <div class="locations-bg"></div>
   <div class="locations-content">
     <div class="section-label reveal">02 &mdash; Locations</div>
-    <h2 class="section-title reveal reveal-delay-1">Serving Silicon Valley's <em>Aviation Hubs</em></h2>
-    <p class="section-subtitle reveal reveal-delay-2">Proudly serving the two premier general aviation airports in the Bay Area &mdash; the heart of tech wealth aviation.</p>
+    <h2 class="section-title reveal reveal-delay-1">Serving Los Angeles' <em>Aviation Hubs</em></h2>
+    <p class="section-subtitle reveal reveal-delay-2">Proudly serving the premier general aviation airports across the greater Los Angeles area.</p>
 
     <div class="location-grid">
       <div class="airport-card reveal reveal-delay-3">
-        <div class="airport-code">HWD</div>
-        <div class="airport-name">Hayward Executive Airport</div>
-        <ul class="airport-stats">
-          <li><strong>400+</strong> based aircraft including 46 jets</li>
-          <li>FBOs: Signature Aviation, Meridian, APP Jet Center</li>
-          <li><strong>206</strong> hangars serving premium clientele</li>
-          <li>Class D Airspace &bull; Tower: 0700&ndash;2100 local</li>
-        </ul>
+        <div class="airport-code">VNY</div>
+        <div class="airport-name">Van Nuys Airport</div>
+      </div>
+
+      <div class="airport-card reveal reveal-delay-3">
+        <div class="airport-code">BUR</div>
+        <div class="airport-name">Burbank Airport</div>
       </div>
 
       <div class="airport-card reveal reveal-delay-4">
-        <div class="airport-code">PAO</div>
-        <div class="airport-name">Palo Alto Airport</div>
-        <ul class="airport-stats">
-          <li><strong>353</strong> based aircraft</li>
-          <li><strong>160,000</strong> annual operations</li>
-          <li>Direct access to Google, Apple, Meta flight departments</li>
-          <li>City of Palo Alto owned &amp; operated general aviation field</li>
-        </ul>
+        <div class="airport-code">SMO</div>
+        <div class="airport-name">Santa Monica Airport</div>
       </div>
-    </div>
 
-    <div class="combined-stat reveal reveal-delay-5">
-      <div class="combined-number">753+</div>
-      <div class="combined-label">Aircraft within our service radius</div>
+      <div class="airport-card reveal reveal-delay-4">
+        <div class="airport-code">LGB</div>
+        <div class="airport-name">Long Beach Airport</div>
+      </div>
+
+      <div class="airport-card reveal reveal-delay-5">
+        <div class="airport-code">LAX</div>
+        <div class="airport-name">Los Angeles International</div>
+      </div>
     </div>
   </div>
 </section>
@@ -1171,7 +1169,7 @@ section {
   <div class="why-content">
     <div class="section-label reveal">04 &mdash; Why Stratos</div>
     <h2 class="section-title reveal reveal-delay-1">Professional. Insured. <em>Compliant.</em></h2>
-    <p class="section-subtitle reveal reveal-delay-2">Fully credentialed at both HWD and PAO. Your aircraft is in trusted hands.</p>
+    <p class="section-subtitle reveal reveal-delay-2">Fully credentialed across all LA-area airports. Your aircraft is in trusted hands.</p>
 
     <div class="why-grid">
       <div class="why-card reveal reveal-delay-2">
@@ -1202,7 +1200,7 @@ section {
     <p style="margin-top: 16px;"><a href="mailto:edgar@stratosjetdetail.com">edgar@stratosjetdetail.com</a></p>
   </div>
   <div class="footer-locations">
-    Hayward Executive Airport <span>HWD</span> &bull; Palo Alto Airport <span>PAO</span>
+    Van Nuys <span>VNY</span> &bull; Burbank <span>BUR</span> &bull; Santa Monica <span>SMO</span> &bull; Long Beach <span>LGB</span> &bull; LAX
   </div>
   <div class="footer-legal">
     &copy; 2026 Stratos Aviation Detailing &mdash; All Rights Reserved
