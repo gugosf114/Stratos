@@ -408,29 +408,18 @@ section {
 
 .about-image {
   position: relative;
-  height: 420px;
-  overflow: hidden;
-  border: 1px solid var(--gray-800);
 }
 
 .about-image img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.85) saturate(0.7);
+  height: auto;
+  object-fit: contain;
+  filter: brightness(0.95) saturate(0.9);
   transition: filter 0.6s ease;
 }
 
 .about-image:hover img {
-  filter: brightness(0.95) saturate(0.85);
-}
-
-.about-image::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(135deg, rgba(10,10,10,0.4), rgba(10,10,10,0.1));
-  pointer-events: none;
+  filter: brightness(1) saturate(1);
 }
 
 /* ═══════════════════════════════════════════
@@ -884,7 +873,7 @@ section {
   .nav { padding: 20px 30px; }
   .nav-links { display: none; }
   .cta-section { padding: 100px 40px; }
-  .about-image { height: 320px; }
+  .about-image { max-width: 600px; margin: 0 auto; }
 }
 
 /* ═══════════════════════════════════════════
@@ -939,7 +928,7 @@ section {
   /* About */
   .about-content { gap: 32px; }
   .about-text p { font-size: 15px; }
-  .about-image { height: 260px; }
+  .about-image { max-width: 100%; }
 
   /* Section titles */
   .section-title {
