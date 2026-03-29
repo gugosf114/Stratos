@@ -94,7 +94,7 @@ body {
 }
 
 .nav-brand img {
-  height: 40px;
+  height: 64px;
   width: auto;
   filter: brightness(0.85) saturate(1.2);
 }
@@ -268,8 +268,8 @@ section {
 
 .particle {
   position: absolute;
-  width: 2px;
-  height: 2px;
+  width: 3px;
+  height: 3px;
   background: var(--gold);
   border-radius: 50%;
   opacity: 0;
@@ -293,7 +293,7 @@ section {
 }
 
 .hero-logo {
-  width: clamp(280px, 40vw, 480px);
+  width: clamp(400px, 55vw, 760px);
   height: auto;
   filter: brightness(0.85) saturate(1.2);
   margin-bottom: 40px;
@@ -303,7 +303,7 @@ section {
 
 .hero-coming-soon {
   font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 52px);
+  font-size: clamp(40px, 5vw, 64px);
   font-weight: 400;
   font-style: italic;
   color: var(--white);
@@ -908,7 +908,7 @@ section {
     letter-spacing: 2px;
   }
   .hero-logo {
-    width: clamp(220px, 60vw, 340px);
+    width: clamp(280px, 75vw, 500px);
     margin-bottom: 28px;
   }
   .hero-tagline {
@@ -1217,6 +1217,10 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// ── Scroll to top on refresh
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
+
 // ── Nav Scroll
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
@@ -1225,7 +1229,7 @@ window.addEventListener('scroll', () => {
 
 // ── Particles
 const field = document.getElementById('particles');
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < 45; i++) {
   const p = document.createElement('div');
   p.className = 'particle';
   p.style.left = Math.random() * 100 + '%';
