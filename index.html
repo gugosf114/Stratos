@@ -89,12 +89,14 @@ body {
 }
 
 .nav-brand {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--gold);
+  display: flex;
+  align-items: center;
+}
+
+.nav-brand img {
+  height: 40px;
+  width: auto;
+  filter: brightness(0.85) saturate(1.2);
 }
 
 .nav-links {
@@ -285,43 +287,18 @@ section {
 }
 
 
-.hero-title {
-  font-family: var(--font-display);
-  font-size: clamp(52px, 8vw, 110px);
-  font-weight: 300;
-  letter-spacing: 14px;
-  text-transform: uppercase;
-  line-height: 1.05;
-  margin-bottom: 8px;
-  background: linear-gradient(135deg, var(--gold-pale) 0%, var(--gold) 40%, var(--gold-dark) 70%, var(--gold-light) 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: goldShimmer 8s ease-in-out infinite, fadeUp 1s 0.5s ease-out both;
-}
-
-@keyframes goldShimmer {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.hero-sub {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  color: var(--gray-400);
-  margin-bottom: 52px;
+.hero-logo {
+  width: clamp(280px, 40vw, 480px);
+  height: auto;
+  filter: brightness(0.85) saturate(1.2);
+  margin-bottom: 40px;
   opacity: 0;
-  animation: fadeUp 1s 0.7s ease-out forwards;
+  animation: fadeUp 1s 0.3s ease-out forwards;
 }
 
 .hero-coming-soon {
@@ -930,14 +907,9 @@ section {
     text-underline-offset: 8px;
     letter-spacing: 2px;
   }
-  .hero-title {
-    font-size: clamp(40px, 12vw, 64px);
-    letter-spacing: 5px;
-  }
-  .hero-sub {
-    font-size: 11px;
-    letter-spacing: 4px;
-    margin-bottom: 36px;
+  .hero-logo {
+    width: clamp(220px, 60vw, 340px);
+    margin-bottom: 28px;
   }
   .hero-tagline {
     font-size: 16px;
@@ -1044,7 +1016,7 @@ section {
 
 <!-- Navigation -->
 <nav class="nav" id="nav">
-  <div class="nav-brand">Stratos</div>
+  <div class="nav-brand"><img src="images/logo.png" alt="Stratos Aviation Detailing"></div>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#locations">Locations</a></li>
@@ -1061,10 +1033,8 @@ section {
   <div class="particle-field" id="particles"></div>
 
   <div class="hero-content">
+    <img src="images/logo.png" alt="Stratos Aviation Detailing" class="hero-logo">
     <p class="hero-coming-soon">Coming Soon</p>
-
-    <h1 class="hero-title">Stratos</h1>
-    <div class="hero-sub">Aviation Detailing</div>
     <p class="hero-tagline">Premium Private Jet Care &mdash; Serving Silicon Valley's Elite Fleet</p>
     <p class="hero-locations">
       Hayward Executive Airport <span>HWD</span>
