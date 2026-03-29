@@ -852,52 +852,6 @@ section {
   opacity: 0.6;
 }
 
-.notify-form {
-  display: flex;
-  justify-content: center;
-  gap: 0;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.notify-input {
-  flex: 1;
-  padding: 18px 24px;
-  background: var(--gray-900);
-  border: 1px solid var(--gray-700);
-  border-right: none;
-  color: var(--white);
-  font-family: var(--font-body);
-  font-size: 14px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.notify-input::placeholder {
-  color: var(--gray-500);
-}
-
-.notify-input:focus {
-  border-color: var(--gold);
-}
-
-.notify-btn {
-  padding: 18px 36px;
-  background: var(--gold);
-  border: 1px solid var(--gold);
-  color: var(--black);
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.notify-btn:hover {
-  background: var(--gold-light);
-}
 
 /* ═══════════════════════════════════════════
    FOOTER
@@ -1109,18 +1063,6 @@ section {
     gap: 14px;
   }
   .cta-feature { font-size: 11px; }
-  .notify-form {
-    flex-direction: column;
-    max-width: 100%;
-  }
-  .notify-input {
-    border-right: 1px solid var(--gray-700);
-    border-bottom: none;
-    padding: 16px 20px;
-  }
-  .notify-btn {
-    padding: 16px 24px;
-  }
 
   /* Footer */
   .footer { padding: 56px 20px; }
@@ -1326,20 +1268,14 @@ section {
     <div class="cta-feature"><div class="dot"></div> Fully Insured</div>
   </div>
 
-  <div class="notify-form reveal reveal-delay-4">
-    <input type="email" class="notify-input" placeholder="Enter your email for launch updates">
-    <button class="notify-btn">Notify Me</button>
-  </div>
 </section>
 
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer class="footer">
   <div class="footer-brand">Stratos Aviation Detailing</div>
   <div class="footer-contact">
-    <h4>Garik Aharonian</h4>
-    <p>Founder</p>
-    <p style="margin-top: 16px;"><a href="mailto:info@stratosaviation.com">info@stratosaviation.com</a></p>
-    <p><a href="tel:+1-000-000-0000">(000) 000-0000</a></p>
+    <p>For urgent inquiries, reach us at</p>
+    <p style="margin-top: 8px;"><a href="mailto:edgar@stratosjetdetail.com">edgar@stratosjetdetail.com</a></p>
   </div>
   <div class="footer-locations">
     Hayward Executive Airport <span>HWD</span> &bull; Palo Alto Airport <span>PAO</span>
@@ -1376,24 +1312,6 @@ for (let i = 0; i < 30; i++) {
   field.appendChild(p);
 }
 
-// ── Notify form (placeholder)
-document.querySelector('.notify-btn').addEventListener('click', function(e) {
-  e.preventDefault();
-  const input = document.querySelector('.notify-input');
-  if (input.value.includes('@')) {
-    input.value = '';
-    this.textContent = 'Thank you!';
-    this.style.background = 'transparent';
-    this.style.color = '#C6A24B';
-    this.style.border = '1px solid #C6A24B';
-    setTimeout(() => {
-      this.textContent = 'Notify Me';
-      this.style.background = '';
-      this.style.color = '';
-      this.style.border = '';
-    }, 3000);
-  }
-});
 </script>
 
 </body>
