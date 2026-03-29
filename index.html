@@ -408,6 +408,8 @@ section {
 
 .about-image {
   position: relative;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
 .about-image img {
@@ -416,6 +418,15 @@ section {
   object-fit: contain;
   filter: brightness(0.95) saturate(0.9);
   transition: filter 0.6s ease;
+}
+
+.about-image::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, transparent, var(--black));
+  pointer-events: none;
 }
 
 .about-image:hover img {
