@@ -949,6 +949,47 @@ section {
 
 
 /* ═══════════════════════════════════════════
+   ADA CERTIFICATION BADGE
+   ═══════════════════════════════════════════ */
+.ada-badge {
+  background: var(--black);
+  text-align: center;
+  padding: 80px 40px;
+  border-top: 1px solid var(--gray-900);
+  border-bottom: 1px solid var(--gray-900);
+}
+
+.ada-badge img {
+  height: 80px;
+  width: auto;
+  opacity: 0.85;
+  filter: drop-shadow(0 2px 8px rgba(198, 162, 75, 0.1));
+  margin-bottom: 24px;
+  transition: all 0.5s ease;
+}
+
+.ada-badge img:hover {
+  opacity: 1;
+  filter: drop-shadow(0 4px 16px rgba(198, 162, 75, 0.2));
+  transform: scale(1.05);
+}
+
+.ada-badge p {
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.ada-badge p strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════
    CONTACT FORM
    ═══════════════════════════════════════════ */
 .contact {
@@ -1508,6 +1549,14 @@ section {
       </div>
     </div>
   </div>
+</section>
+
+<!-- ═══════════ ADA BADGE ═══════════ -->
+<section class="ada-badge reveal">
+  <a href="https://www.aviationdetailingassociation.com/" target="_blank" rel="noopener">
+    <img src="images/ada-logo.png" alt="Aviation Detailing Association">
+  </a>
+  <p><strong>Certified member</strong> of the Aviation Detailing Association &mdash; trained and verified to meet the highest standards in aircraft care, safety procedures, and aviation-grade detailing practices.</p>
 </section>
 
 <!-- ═══════════ CONTACT ═══════════ -->
