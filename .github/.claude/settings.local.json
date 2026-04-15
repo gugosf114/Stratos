@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Desktop_Commander__read_file",
+      "Bash(where:*)",
+      "Bash(dir:*)",
+      "Bash(start \"\" \"C:\\\\Users\\\\georg\\\\Documents\\\\GitHub\\\\Fermi-Game\\\\index.html\")",
+      "Bash(powershell -Command:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(start \"\" \"https://github.com/gugosf114/Fermi-Game/settings/pages\")",
+      "Bash(git pull:*)",
+      "Bash(git remote get-url:*)",
+      "Bash(curl:*)",
+      "Bash(git remote set-url:*)"
+    ]
+  }
+}
