@@ -1346,9 +1346,10 @@ section {
       <div class="hero-feature"><div class="dot"></div> 24/7 Mobile</div>
       <div class="hero-feature"><div class="dot"></div> FAA-Compliant</div>
       <div class="hero-feature"><div class="dot"></div> Fully Insured</div>
+      <div class="hero-feature"><div class="dot"></div> <a href="tel:4242888882" style="color: inherit; text-decoration: none;">424-288-8882</a></div>
     </div>
 
-    <a href="mailto:edgar@stratosjetdetail.com" class="hero-cta">Request a Quote &mdash; edgar@stratosjetdetail.com</a>
+    <a href="#contact" class="hero-cta">Request a Quote</a>
   </div>
 </section>
 
@@ -1519,6 +1520,10 @@ section {
     <div class="contact-info reveal reveal-delay-3">
       <p>Whether you need a <strong>one-time detail before a trip</strong> or an <strong>ongoing maintenance plan</strong> for your fleet, we're here to help. Reach out with any questions &mdash; no commitment required.</p>
       <p>We service aircraft of all sizes at <strong>all major Los Angeles area airports</strong>, including Van Nuys, Burbank, Santa Monica, Long Beach, and LAX.</p>
+      <p style="margin-top: 8px;">
+        <strong style="color: var(--gold);">Call or text:</strong> <a href="tel:4242888882" style="color: var(--white); text-decoration: none;">424-288-8882</a><br>
+        <strong style="color: var(--gold);">Email:</strong> <a href="mailto:edgar@stratosjetdetail.com" style="color: var(--white); text-decoration: none;">edgar@stratosjetdetail.com</a>
+      </p>
 
       <div class="contact-response">
         <span class="response-icon">&#9201;</span>
@@ -1533,16 +1538,20 @@ section {
           <input type="text" id="name" name="name" placeholder="Your name" required>
         </div>
         <div class="form-group">
-          <label for="phone">Phone</label>
-          <input type="tel" id="phone" name="phone" placeholder="(000) 000-0000" required>
-        </div>
-        <div class="form-group">
           <label for="email">Email</label>
           <input type="email" id="email" name="email" placeholder="you@email.com" required>
         </div>
         <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="(000) 000-0000" required>
+        </div>
+        <div class="form-group">
+          <label for="aircraft">Aircraft Type / Tail Number</label>
+          <input type="text" id="aircraft" name="aircraft" placeholder="e.g. Gulfstream G650, N12345">
+        </div>
+        <div class="form-group">
           <label for="message">How can we help?</label>
-          <textarea id="message" name="message" placeholder="Tell us about your aircraft, the services you need, or any questions you have..."></textarea>
+          <textarea id="message" name="message" placeholder="Services needed, airport location, preferred timing..."></textarea>
         </div>
         <button type="submit" class="form-submit">Send Message</button>
       </form>
@@ -1561,7 +1570,8 @@ section {
   <div class="footer-contact">
     <h4>Edgar Agaronian</h4>
     <p>Founder</p>
-    <p style="margin-top: 16px;"><a href="mailto:edgar@stratosjetdetail.com">edgar@stratosjetdetail.com</a></p>
+    <p style="margin-top: 16px;"><a href="tel:4242888882" style="color: var(--gold); text-decoration: none;">424-288-8882</a></p>
+    <p style="margin-top: 6px;"><a href="mailto:edgar@stratosjetdetail.com">edgar@stratosjetdetail.com</a></p>
   </div>
   <div class="footer-locations">
     Van Nuys <span>VNY</span> &bull; Burbank <span>BUR</span> &bull; Santa Monica <span>SMO</span> &bull; Long Beach <span>LGB</span> &bull; LAX
@@ -1602,23 +1612,45 @@ for (let i = 0; i < 45; i++) {
   field.appendChild(p);
 }
 
-// ── Contact Form
+// ── Contact Form (Google Apps Script)
 document.getElementById('contactForm').addEventListener('submit', function(e) {
   e.preventDefault();
-  const name = document.getElementById('name').value;
-  const phone = document.getElementById('phone').value;
-  const email = document.getElementById('email').value;
-  const message = document.getElementById('message').value;
-  const subject = encodeURIComponent('Stratos Inquiry from ' + name);
-  const body = encodeURIComponent(
-    'Name: ' + name + '\n' +
-    'Phone: ' + phone + '\n' +
-    'Email: ' + email + '\n\n' +
-    'Message:\n' + message
-  );
-  window.location.href = 'mailto:edgar@stratosjetdetail.com?subject=' + subject + '&body=' + body;
-  document.getElementById('contactForm').style.display = 'none';
-  document.getElementById('formSuccess').style.display = 'block';
+  const btn = this.querySelector('.form-submit');
+  btn.textContent = 'SENDING...';
+  btn.disabled = true;
+
+  const data = {
+    name: document.getElementById('name').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    aircraft: document.getElementById('aircraft').value,
+    message: document.getElementById('message').value
+  };
+
+  // REPLACE THIS URL with your deployed Google Apps Script Web App URL
+  const SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(() => {
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('formSuccess').style.display = 'block';
+  })
+  .catch(() => {
+    // Fallback to mailto if Apps Script fails
+    const subject = encodeURIComponent('Stratos Inquiry from ' + data.name);
+    const body = encodeURIComponent(
+      'Name: ' + data.name + '\nEmail: ' + data.email + '\nPhone: ' + data.phone +
+      '\nAircraft: ' + data.aircraft + '\n\nMessage:\n' + data.message
+    );
+    window.location.href = 'mailto:edgar@stratosjetdetail.com?subject=' + subject + '&body=' + body;
+    btn.textContent = 'SEND MESSAGE';
+    btn.disabled = false;
+  });
 });
 
 // ── PWA Service Worker
