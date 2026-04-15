@@ -990,71 +990,162 @@ section {
 }
 
 /* ═══════════════════════════════════════════
-   CONTACT FORM
+   CTA SECTION (Contact + Quote buttons)
    ═══════════════════════════════════════════ */
-.contact {
+.cta-dual {
   background: var(--black-light);
+  text-align: center;
+  padding: 120px 40px;
 }
 
-.contact-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  margin-top: 64px;
-  align-items: start;
+.cta-dual-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 48px;
+  flex-wrap: wrap;
 }
 
-.contact-info p {
-  font-size: 17px;
+.cta-dual-buttons .btn-contact,
+.cta-dual-buttons .btn-quote {
+  padding: 18px 48px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  text-decoration: none;
+}
+
+.btn-contact {
+  background: transparent;
+  border: 1px solid var(--gray-700);
   color: var(--gray-300);
-  line-height: 1.9;
-  margin-bottom: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
 }
 
-.contact-info p strong {
+.btn-contact:hover {
+  border-color: var(--white);
   color: var(--white);
+  box-shadow: 0 0 30px rgba(255,255,255,0.05), 0 8px 24px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+
+.btn-quote {
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: var(--black);
+  box-shadow: 0 0 20px rgba(198,162,75,0.15);
+}
+
+.btn-quote:hover {
+  background: var(--gold-light);
+  box-shadow: 0 0 40px rgba(198,162,75,0.3), 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(-2px);
+}
+
+.cta-phone {
+  margin-top: 32px;
+  font-size: 14px;
+  color: var(--gray-500);
+}
+
+.cta-phone a {
+  color: var(--gold);
+  text-decoration: none;
   font-weight: 500;
 }
 
-.contact-response {
-  display: flex;
+/* ═══════════════════════════════════════════
+   MODAL SYSTEM
+   ═══════════════════════════════════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
-  margin-top: 28px;
-  padding: 20px 24px;
-  border: 1px solid rgba(198, 162, 75, 0.15);
-  background: rgba(198, 162, 75, 0.03);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 24px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-.contact-response .response-icon {
-  font-size: 20px;
-  color: var(--gold);
-}
-
-.contact-response span {
-  font-size: 14px;
-  color: var(--gray-300);
-  letter-spacing: 1px;
-}
-
-.contact-response strong {
-  color: var(--gold);
-}
-
-.contact-form {
+.modal-overlay.active {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  opacity: 1;
 }
 
-.form-group {
+.modal {
+  background: var(--black-light);
+  border: 1px solid var(--gray-800);
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 48px 40px;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 60px rgba(198,162,75,0.05);
+  animation: modalIn 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.modal-quote {
+  max-width: 540px;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 20px;
+  background: none;
+  border: none;
+  color: var(--gray-500);
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+  line-height: 1;
+}
+
+.modal-close:hover { color: var(--gold); }
+
+.modal h3 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--white);
+  margin-bottom: 8px;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.1),
+    0 2px 3px rgba(0,0,0,0.35),
+    0 4px 6px rgba(0,0,0,0.15);
+}
+
+.modal h3 em { color: var(--gold-light); font-style: italic; }
+
+.modal .modal-desc {
+  font-size: 14px;
+  color: var(--gray-400);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.modal .form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-bottom: 16px;
 }
 
-.form-group label {
+.modal .form-group label {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 2px;
@@ -1062,38 +1153,66 @@ section {
   color: var(--gray-400);
 }
 
-.form-group input,
-.form-group textarea {
+.modal .form-group input,
+.modal .form-group textarea,
+.modal .form-group select {
   background: var(--black-card);
   border: 1px solid var(--gray-800);
   color: var(--white);
   font-family: var(--font-body);
   font-size: 15px;
-  padding: 14px 18px;
+  padding: 12px 16px;
   outline: none;
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  -webkit-appearance: none;
 }
 
-.form-group input:focus,
-.form-group textarea:focus {
+.modal .form-group input:focus,
+.modal .form-group textarea:focus,
+.modal .form-group select:focus {
   border-color: var(--gold);
-  box-shadow: 0 0 20px rgba(198, 162, 75, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 20px rgba(198,162,75,0.1), 0 4px 16px rgba(0,0,0,0.3);
 }
 
-.form-group input::placeholder,
-.form-group textarea::placeholder {
+.modal .form-group input::placeholder,
+.modal .form-group textarea::placeholder {
   color: var(--gray-700);
 }
 
-.form-group textarea {
+.modal .form-group textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 90px;
 }
 
-.form-submit {
-  align-self: flex-start;
-  padding: 16px 48px;
+.modal .form-group select {
+  cursor: pointer;
+}
+
+.modal .form-group select option {
+  background: var(--black-card);
+  color: var(--white);
+}
+
+.modal .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal .other-airport {
+  display: none;
+  margin-top: 8px;
+}
+
+.modal .other-airport.visible {
+  display: block;
+}
+
+.modal .form-submit {
+  width: 100%;
+  margin-top: 8px;
+  padding: 16px;
   border: 1px solid var(--gold);
   background: transparent;
   color: var(--gold);
@@ -1104,38 +1223,39 @@ section {
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  box-shadow: 0 0 20px rgba(198, 162, 75, 0.1);
+  box-shadow: 0 0 20px rgba(198,162,75,0.1);
 }
 
-.form-submit:hover {
+.modal .form-submit:hover {
   background: var(--gold);
   color: var(--black);
-  box-shadow: 0 0 40px rgba(198, 162, 75, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 40px rgba(198,162,75,0.3), 0 8px 32px rgba(0,0,0,0.4);
   transform: translateY(-2px);
 }
 
-.form-success {
+.modal .form-success {
   display: none;
   text-align: center;
-  padding: 40px;
-  border: 1px solid rgba(198, 162, 75, 0.2);
-  background: rgba(198, 162, 75, 0.03);
+  padding: 32px 0;
 }
 
-.form-success h3 {
+.modal .form-success h4 {
   font-family: var(--font-display);
-  font-size: 24px;
+  font-size: 22px;
   color: var(--gold);
-  margin-bottom: 12px;
-  text-shadow:
-    0 1px 0 rgba(255,235,180,0.25),
-    0 2px 3px rgba(0,0,0,0.4),
-    0 4px 6px rgba(155,126,47,0.2);
+  margin-bottom: 8px;
 }
 
-.form-success p {
-  font-size: 15px;
+.modal .form-success p {
+  font-size: 14px;
   color: var(--gray-400);
+}
+
+@media (max-width: 640px) {
+  .modal { padding: 36px 24px; }
+  .modal .form-row { grid-template-columns: 1fr; }
+  .cta-dual { padding: 80px 20px; }
+  .cta-dual-buttons { flex-direction: column; align-items: center; }
 }
 
 /* ═══════════════════════════════════════════
@@ -1213,8 +1333,7 @@ section {
   section { padding: 100px 40px; }
   .about-content,
   .location-grid,
-  .compliance-grid,
-  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .compliance-grid { grid-template-columns: 1fr; gap: 40px; }
   .services-grid { grid-template-columns: 1fr 1fr; }
   .why-grid { grid-template-columns: 1fr; max-width: 500px; }
   .nav { padding: 20px 30px; }
@@ -1390,7 +1509,7 @@ section {
       <div class="hero-feature"><div class="dot"></div> <a href="tel:4242888882" style="color: inherit; text-decoration: none;">424-288-8882</a></div>
     </div>
 
-    <a href="#contact" class="hero-cta">Request a Quote</a>
+    <a href="javascript:void(0)" onclick="openModal('quoteModal')" class="hero-cta">Request a Quote</a>
   </div>
 </section>
 
@@ -1559,59 +1678,116 @@ section {
   <p><strong>Certified member</strong> of the Aviation Detailing Association &mdash; trained and verified to meet the highest standards in aircraft care, safety procedures, and aviation-grade detailing practices.</p>
 </section>
 
-<!-- ═══════════ CONTACT ═══════════ -->
-<section class="contact" id="contact">
-  <div class="section-label reveal">05 &mdash; Contact</div>
-  <h2 class="section-title reveal reveal-delay-1">Get in <em>Touch</em></h2>
-  <p class="section-subtitle reveal reveal-delay-2">Tell us about your aircraft and we'll put together a custom quote.</p>
+<!-- ═══════════ CTA: CONTACT + QUOTE ═══════════ -->
+<section class="cta-dual" id="contact">
+  <div class="section-label reveal" style="justify-content: center;">05 &mdash; Contact</div>
+  <h2 class="section-title reveal reveal-delay-1" style="text-align: center;">Ready to Get <em>Started?</em></h2>
+  <p class="section-subtitle reveal reveal-delay-2" style="text-align: center; margin: 0 auto;">Reach out with a question or request a custom quote for your aircraft.</p>
 
-  <div class="contact-grid">
-    <div class="contact-info reveal reveal-delay-3">
-      <p>Whether you need a <strong>one-time detail before a trip</strong> or an <strong>ongoing maintenance plan</strong> for your fleet, we're here to help. Reach out with any questions &mdash; no commitment required.</p>
-      <p>We service aircraft of all sizes at <strong>all major Los Angeles area airports</strong>, including Van Nuys, Burbank, Santa Monica, Long Beach, and LAX.</p>
-      <p style="margin-top: 8px;">
-        <strong style="color: var(--gold);">Call or text:</strong> <a href="tel:4242888882" style="color: var(--white); text-decoration: none;">424-288-8882</a><br>
-        <strong style="color: var(--gold);">Email:</strong> <a href="mailto:edgar@stratosjetdetail.com" style="color: var(--white); text-decoration: none;">edgar@stratosjetdetail.com</a>
-      </p>
+  <div class="cta-dual-buttons reveal reveal-delay-3">
+    <button class="btn-contact" onclick="openModal('contactModal')">Contact Us</button>
+    <button class="btn-quote" onclick="openModal('quoteModal')">Get a Quote</button>
+  </div>
 
-      <div class="contact-response">
-        <span class="response-icon">&#9201;</span>
-        <span>We respond to all inquiries within <strong>24 hours</strong></span>
-      </div>
-    </div>
-
-    <div class="reveal reveal-delay-4">
-      <form class="contact-form" id="contactForm">
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" placeholder="Your name" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="you@email.com" required>
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone</label>
-          <input type="tel" id="phone" name="phone" placeholder="(000) 000-0000" required>
-        </div>
-        <div class="form-group">
-          <label for="aircraft">Aircraft Type / Tail Number</label>
-          <input type="text" id="aircraft" name="aircraft" placeholder="e.g. Gulfstream G650, N12345">
-        </div>
-        <div class="form-group">
-          <label for="message">How can we help?</label>
-          <textarea id="message" name="message" placeholder="Services needed, airport location, preferred timing..."></textarea>
-        </div>
-        <button type="submit" class="form-submit">Send Message</button>
-      </form>
-
-      <div class="form-success" id="formSuccess">
-        <h3>Message Sent</h3>
-        <p>Thank you &mdash; we'll be in touch within 24 hours.</p>
-      </div>
-    </div>
+  <div class="cta-phone reveal reveal-delay-4">
+    Or call directly: <a href="tel:4242888882">424-288-8882</a>
   </div>
 </section>
+
+<!-- ═══ CONTACT MODAL ═══ -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('contactModal')">&times;</button>
+    <h3>Contact <em>Us</em></h3>
+    <p class="modal-desc">Have a question? Send us a message and we'll get back to you within 24 hours.</p>
+    <form id="contactForm" onsubmit="submitForm(event, 'contact')">
+      <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="name" placeholder="Your name" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="you@email.com" required>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" name="phone" placeholder="(000) 000-0000">
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea name="message" placeholder="How can we help?"></textarea>
+      </div>
+      <button type="submit" class="form-submit">Send Message</button>
+    </form>
+    <div class="form-success" id="contactSuccess">
+      <h4>Message Sent</h4>
+      <p>We'll be in touch within 24 hours.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ QUOTE MODAL ═══ -->
+<div class="modal-overlay" id="quoteModal">
+  <div class="modal modal-quote">
+    <button class="modal-close" onclick="closeModal('quoteModal')">&times;</button>
+    <h3>Get a <em>Quote</em></h3>
+    <p class="modal-desc">Tell us about your aircraft and we'll put together a custom estimate.</p>
+    <form id="quoteForm" onsubmit="submitForm(event, 'quote')">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" name="name" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" name="company" placeholder="Company name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" name="phone" placeholder="(000) 000-0000" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" placeholder="you@email.com" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Aircraft Type / Tail Number</label>
+        <input type="text" name="aircraft" placeholder="e.g. Gulfstream G650, N12345">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Airport / Location</label>
+          <select name="airport" id="airportSelect" onchange="toggleOther(this)">
+            <option value="" disabled selected>Select airport</option>
+            <option value="VNY — Van Nuys Airport">VNY &mdash; Van Nuys</option>
+            <option value="BUR — Hollywood Burbank">BUR &mdash; Burbank</option>
+            <option value="SMO — Santa Monica">SMO &mdash; Santa Monica</option>
+            <option value="LGB — Long Beach">LGB &mdash; Long Beach</option>
+            <option value="LAX — Los Angeles Intl">LAX &mdash; Los Angeles</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="text" name="airport_other" class="other-airport" id="otherAirport" placeholder="Enter airport name or code">
+        </div>
+        <div class="form-group">
+          <label>Preferred Service Date</label>
+          <input type="date" name="service_date">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Additional Details</label>
+        <textarea name="message" placeholder="Services needed, special requests, fleet size..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">Request Quote</button>
+    </form>
+    <div class="form-success" id="quoteSuccess">
+      <h4>Quote Requested</h4>
+      <p>We'll review your details and follow up within 24 hours.</p>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer class="footer">
@@ -1661,20 +1837,68 @@ for (let i = 0; i < 45; i++) {
   field.appendChild(p);
 }
 
-// ── Contact Form (Google Apps Script)
-document.getElementById('contactForm').addEventListener('submit', function(e) {
+// ── Modal System
+function openModal(id) {
+  const modal = document.getElementById(id);
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => modal.classList.add('active'));
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  modal.classList.remove('active');
+  setTimeout(() => {
+    modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 300);
+}
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) closeModal(this.id);
+  });
+});
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => closeModal(m.id));
+  }
+});
+
+// Toggle "Other" airport field
+function toggleOther(select) {
+  const other = document.getElementById('otherAirport');
+  if (select.value === 'Other') {
+    other.classList.add('visible');
+    other.required = true;
+  } else {
+    other.classList.remove('visible');
+    other.required = false;
+    other.value = '';
+  }
+}
+
+// Form submissions
+function submitForm(e, type) {
   e.preventDefault();
-  const btn = this.querySelector('.form-submit');
+  const form = e.target;
+  const btn = form.querySelector('.form-submit');
   btn.textContent = 'SENDING...';
   btn.disabled = true;
 
-  const data = {
-    name: document.getElementById('name').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    aircraft: document.getElementById('aircraft').value,
-    message: document.getElementById('message').value
-  };
+  const formData = new FormData(form);
+  const data = {};
+  formData.forEach((v, k) => data[k] = v);
+  data.form_type = type;
+
+  // If airport is "Other", use the typed value
+  if (data.airport === 'Other' && data.airport_other) {
+    data.airport = data.airport_other;
+  }
+  delete data.airport_other;
 
   // REPLACE THIS URL with your deployed Google Apps Script Web App URL
   const SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
@@ -1686,21 +1910,17 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     body: JSON.stringify(data)
   })
   .then(() => {
-    document.getElementById('contactForm').style.display = 'none';
-    document.getElementById('formSuccess').style.display = 'block';
+    form.style.display = 'none';
+    document.getElementById(type === 'contact' ? 'contactSuccess' : 'quoteSuccess').style.display = 'block';
   })
   .catch(() => {
-    // Fallback to mailto if Apps Script fails
-    const subject = encodeURIComponent('Stratos Inquiry from ' + data.name);
-    const body = encodeURIComponent(
-      'Name: ' + data.name + '\nEmail: ' + data.email + '\nPhone: ' + data.phone +
-      '\nAircraft: ' + data.aircraft + '\n\nMessage:\n' + data.message
-    );
+    const subject = encodeURIComponent('Stratos ' + (type === 'quote' ? 'Quote Request' : 'Inquiry') + ' from ' + (data.name || ''));
+    const body = encodeURIComponent(Object.entries(data).map(([k,v]) => k + ': ' + v).join('\n'));
     window.location.href = 'mailto:edgar@stratosjetdetail.com?subject=' + subject + '&body=' + body;
-    btn.textContent = 'SEND MESSAGE';
+    btn.textContent = type === 'quote' ? 'REQUEST QUOTE' : 'SEND MESSAGE';
     btn.disabled = false;
   });
-});
+}
 
 // ── PWA Service Worker
 if ('serviceWorker' in navigator) {
