@@ -949,6 +949,155 @@ section {
 
 
 /* ═══════════════════════════════════════════
+   CONTACT FORM
+   ═══════════════════════════════════════════ */
+.contact {
+  background: var(--black-light);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  margin-top: 64px;
+  align-items: start;
+}
+
+.contact-info p {
+  font-size: 17px;
+  color: var(--gray-300);
+  line-height: 1.9;
+  margin-bottom: 20px;
+}
+
+.contact-info p strong {
+  color: var(--white);
+  font-weight: 500;
+}
+
+.contact-response {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 20px 24px;
+  border: 1px solid rgba(198, 162, 75, 0.15);
+  background: rgba(198, 162, 75, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.contact-response .response-icon {
+  font-size: 20px;
+  color: var(--gold);
+}
+
+.contact-response span {
+  font-size: 14px;
+  color: var(--gray-300);
+  letter-spacing: 1px;
+}
+
+.contact-response strong {
+  color: var(--gold);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-400);
+}
+
+.form-group input,
+.form-group textarea {
+  background: var(--black-card);
+  border: 1px solid var(--gray-800);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 14px 18px;
+  outline: none;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(198, 162, 75, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--gray-700);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-submit {
+  align-self: flex-start;
+  padding: 16px 48px;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 0 20px rgba(198, 162, 75, 0.1);
+}
+
+.form-submit:hover {
+  background: var(--gold);
+  color: var(--black);
+  box-shadow: 0 0 40px rgba(198, 162, 75, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 40px;
+  border: 1px solid rgba(198, 162, 75, 0.2);
+  background: rgba(198, 162, 75, 0.03);
+}
+
+.form-success h3 {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-shadow:
+    0 1px 0 rgba(255,235,180,0.25),
+    0 2px 3px rgba(0,0,0,0.4),
+    0 4px 6px rgba(155,126,47,0.2);
+}
+
+.form-success p {
+  font-size: 15px;
+  color: var(--gray-400);
+}
+
+/* ═══════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════ */
 .footer {
@@ -1023,7 +1172,8 @@ section {
   section { padding: 100px 40px; }
   .about-content,
   .location-grid,
-  .compliance-grid { grid-template-columns: 1fr; gap: 40px; }
+  .compliance-grid,
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
   .services-grid { grid-template-columns: 1fr 1fr; }
   .why-grid { grid-template-columns: 1fr; max-width: 500px; }
   .nav { padding: 20px 30px; }
@@ -1359,8 +1509,54 @@ section {
   </div>
 </section>
 
+<!-- ═══════════ CONTACT ═══════════ -->
+<section class="contact" id="contact">
+  <div class="section-label reveal">05 &mdash; Contact</div>
+  <h2 class="section-title reveal reveal-delay-1">Get in <em>Touch</em></h2>
+  <p class="section-subtitle reveal reveal-delay-2">Tell us about your aircraft and we'll put together a custom quote.</p>
+
+  <div class="contact-grid">
+    <div class="contact-info reveal reveal-delay-3">
+      <p>Whether you need a <strong>one-time detail before a trip</strong> or an <strong>ongoing maintenance plan</strong> for your fleet, we're here to help. Reach out with any questions &mdash; no commitment required.</p>
+      <p>We service aircraft of all sizes at <strong>all major Los Angeles area airports</strong>, including Van Nuys, Burbank, Santa Monica, Long Beach, and LAX.</p>
+
+      <div class="contact-response">
+        <span class="response-icon">&#9201;</span>
+        <span>We respond to all inquiries within <strong>24 hours</strong></span>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-4">
+      <form class="contact-form" id="contactForm">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" placeholder="(000) 000-0000" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="you@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="message">How can we help?</label>
+          <textarea id="message" name="message" placeholder="Tell us about your aircraft, the services you need, or any questions you have..."></textarea>
+        </div>
+        <button type="submit" class="form-submit">Send Message</button>
+      </form>
+
+      <div class="form-success" id="formSuccess">
+        <h3>Message Sent</h3>
+        <p>Thank you &mdash; we'll be in touch within 24 hours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══════════ FOOTER ═══════════ -->
-<footer class="footer" id="contact">
+<footer class="footer">
   <div class="footer-brand">Stratos Aviation Detailing</div>
   <div class="footer-contact">
     <h4>Edgar Agaronian</h4>
@@ -1405,6 +1601,25 @@ for (let i = 0; i < 45; i++) {
   p.style.animationDuration = (4 + Math.random() * 4) + 's';
   field.appendChild(p);
 }
+
+// ── Contact Form
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const name = document.getElementById('name').value;
+  const phone = document.getElementById('phone').value;
+  const email = document.getElementById('email').value;
+  const message = document.getElementById('message').value;
+  const subject = encodeURIComponent('Stratos Inquiry from ' + name);
+  const body = encodeURIComponent(
+    'Name: ' + name + '\n' +
+    'Phone: ' + phone + '\n' +
+    'Email: ' + email + '\n\n' +
+    'Message:\n' + message
+  );
+  window.location.href = 'mailto:edgar@stratosjetdetail.com?subject=' + subject + '&body=' + body;
+  document.getElementById('contactForm').style.display = 'none';
+  document.getElementById('formSuccess').style.display = 'block';
+});
 
 // ── PWA Service Worker
 if ('serviceWorker' in navigator) {
