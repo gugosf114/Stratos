@@ -1,4 +1,4 @@
-const CACHE = 'stratos-v1';
+const CACHE = 'stratos-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const ASSETS = [
   '/images/van.png',
   '/images/jet.png',
   '/images/airport.png',
+  '/images/ada-logo.png',
   '/images/icon-192.png',
   '/images/icon-512.png'
 ];
