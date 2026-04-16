@@ -1707,6 +1707,9 @@ section {
     <h3>Contact <em>Us</em></h3>
     <p class="modal-desc">Have a question? Send us a message and we'll get back to you within 24 hours.</p>
     <form id="contactForm" onsubmit="submitForm(event, 'contact')">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_subject" value="Stratos Website — Contact Inquiry">
+      <input type="hidden" name="_template" value="table">
       <div class="form-group">
         <label>Name</label>
         <input type="text" name="name" placeholder="Your name" required>
@@ -1739,6 +1742,9 @@ section {
     <h3>Get a <em>Quote</em></h3>
     <p class="modal-desc">Tell us about your aircraft and we'll put together a custom estimate.</p>
     <form id="quoteForm" onsubmit="submitForm(event, 'quote')">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_subject" value="Stratos Website — Quote Request">
+      <input type="hidden" name="_template" value="table">
       <div class="form-row">
         <div class="form-group">
           <label>Name</label>
@@ -1926,16 +1932,16 @@ function submitForm(e, type) {
   }
   delete data.airport_other;
 
-  // REPLACE THIS URL with your deployed Google Apps Script Web App URL
-  const SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+  // FORMSUBMIT.CO — zero config, emails go directly to Edgar
+  const SCRIPT_URL = 'https://formsubmit.co/ajax/edgar@stratosjetdetail.com';
 
   fetch(SCRIPT_URL, {
     method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(data)
   })
-  .then(() => {
+  .then(r => r.json())
+  .then(result => {
     form.style.display = 'none';
     document.getElementById(type === 'contact' ? 'contactSuccess' : 'quoteSuccess').style.display = 'block';
   })
