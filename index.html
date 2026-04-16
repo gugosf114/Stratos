@@ -148,6 +148,9 @@ body {
 .nav-links a:hover { color: var(--gold); }
 .nav-links a:hover::after { width: 100%; }
 
+.nav-links a.active { color: var(--gold); }
+.nav-links a.active::after { width: 100%; }
+
 /* ── Global Section Styles ───────────────── */
 section {
   padding: 140px 80px;
@@ -1824,6 +1827,26 @@ const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
   nav.classList.toggle('scrolled', window.scrollY > 80);
 }, { passive: true });
+
+// ── Active Nav on Scroll
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.getAttribute('id');
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + id) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-80px 0px -50% 0px' });
+
+sections.forEach(section => sectionObserver.observe(section));
 
 // ── Particles
 const field = document.getElementById('particles');
