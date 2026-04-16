@@ -369,6 +369,38 @@ section {
   transform: scale(1.02);
 }
 
+.hero-logo-wrap {
+  display: inline-block;
+  position: relative;
+  line-height: 0;
+}
+.hero-logo-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg,
+    transparent 35%,
+    rgba(255,225,150,0.35) 46%,
+    rgba(255,248,215,0.85) 50%,
+    rgba(255,225,150,0.35) 54%,
+    transparent 65%);
+  -webkit-mask: url('images/logo.png') center/contain no-repeat;
+          mask: url('images/logo.png') center/contain no-repeat;
+  transform: translateX(-120%);
+  animation: heroShine 7s ease-in-out 2.5s infinite;
+  will-change: transform;
+  mix-blend-mode: screen;
+}
+@keyframes heroShine {
+  0%   { transform: translateX(-120%); }
+  18%  { transform: translateX(120%); }
+  100% { transform: translateX(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo-wrap::after { animation: none; }
+}
+
 .hero-coming-soon {
   font-family: var(--font-display);
   font-size: clamp(40px, 5vw, 64px);
@@ -1503,7 +1535,7 @@ section {
   <div class="particle-field" id="particles"></div>
 
   <div class="hero-content">
-    <img src="images/logo.png" alt="Stratos Aviation Detailing" class="hero-logo">
+    <span class="hero-logo-wrap"><img src="images/logo.png" alt="Stratos Aviation Detailing" class="hero-logo"></span>
     <p class="hero-coming-soon">Aviation Detailing, Elevated</p>
     <p class="hero-message">On-site detailing for private and corporate aircraft across Los Angeles. We come to your hangar, your FBO, your schedule.</p>
 
