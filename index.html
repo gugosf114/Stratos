@@ -1784,20 +1784,25 @@ section {
       }
     }
 
-    function scheduleNextScramble() {
-      // Random 3.5–8s gap between scrambles. Persistent enough to be
-      // noticed within a minute of looking at the board.
-      const delay = 3500 + Math.floor(Math.random() * 4500);
-      setTimeout(function() {
+    function fireRandomScramble() {
+      try {
         const hubIdx = Math.floor(Math.random() * HUBS.length);
         scrambleCityRow(hubIdx);
-        scheduleNextScramble();
-      }, delay);
+      } catch (e) {
+        // Never let a scramble error kill the recurring interval.
+        console.error('scramble:', e);
+      }
     }
 
     buildBoardOnce();
     setInterval(tick, 1000);
-    scheduleNextScramble();
+
+    // Kick off the first scramble quickly so a new visitor sees one within
+    // ~1.5s of load, then continue firing reliably every 5.5s. Hard
+    // setInterval instead of recursive setTimeout so a single silent
+    // failure can't leave the ticker static.
+    setTimeout(fireRandomScramble, 1500);
+    setInterval(fireRandomScramble, 5500);
   })();
 </script>
 <!-- ── End Stratos FIDS Ticker ──────── -->
