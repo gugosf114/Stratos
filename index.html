@@ -1808,7 +1808,6 @@ section {
     function positionChatWindow() {
       const isMobile = window.innerWidth <= 480;
       if (isMobile) {
-        // Clear any inline overrides so the @media rule takes effect.
         chatWindow.style.right = '';
         chatWindow.style.bottom = '';
         chatWindow.style.left = '';
@@ -1817,24 +1816,36 @@ section {
       }
       const btnRect = chatBtn.getBoundingClientRect();
       const winW = 350, winH = 450, gap = 10, pad = 10;
+      const vpW = window.innerWidth;
+      const vpH = window.innerHeight;
 
-      // Default: window sits above the bubble, right edge aligned.
-      let rightPx = window.innerWidth - btnRect.right;
-      let bottomPx = window.innerHeight - btnRect.top + gap;
-
-      // Clamp so the window doesn't run off the top / left.
-      if (window.innerHeight - bottomPx - winH < pad) {
-        bottomPx = window.innerHeight - winH - pad;
-      }
-      if (window.innerWidth - rightPx - winW < pad) {
-        rightPx = window.innerWidth - winW - pad;
-      }
+      // Horizontal: align window's right edge with the bubble's right edge,
+      // then clamp so the window never runs off the left of the viewport.
+      let rightPx = vpW - btnRect.right;
+      if (rightPx + winW > vpW - pad) rightPx = vpW - winW - pad;
       if (rightPx < pad) rightPx = pad;
 
+      // Vertical: prefer above the bubble. If not enough headroom, flip below.
+      const spaceAbove = btnRect.top - pad;
+      const spaceBelow = vpH - btnRect.bottom - pad;
+      const fitsAbove = spaceAbove >= winH + gap;
+
       chatWindow.style.right = rightPx + 'px';
-      chatWindow.style.bottom = bottomPx + 'px';
       chatWindow.style.left = '';
-      chatWindow.style.top = '';
+
+      if (fitsAbove || spaceAbove >= spaceBelow) {
+        // Place above the bubble.
+        let bottomPx = vpH - btnRect.top + gap;
+        if (vpH - bottomPx - winH < pad) bottomPx = vpH - winH - pad;
+        chatWindow.style.bottom = bottomPx + 'px';
+        chatWindow.style.top = '';
+      } else {
+        // Place below the bubble.
+        let topPx = btnRect.bottom + gap;
+        if (topPx + winH > vpH - pad) topPx = vpH - winH - pad;
+        chatWindow.style.top = topPx + 'px';
+        chatWindow.style.bottom = '';
+      }
     }
 
     chatBtn.onclick = () => {
