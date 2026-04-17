@@ -1577,7 +1577,7 @@ section {
     background: #fafafa;
   }
 
-  .chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; }
+  .chat-msg { max-width: 80%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; overflow-wrap: anywhere; }
   .chat-msg.bot { background: #eee; color: #111; align-self: flex-start; }
   .chat-msg.user { background: #111; color: #fff; align-self: flex-end; }
 
@@ -1607,6 +1607,31 @@ section {
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
+  }
+
+  /* Typewriter caret for the tooltip */
+  #stratos-chat-tooltip::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: #111;
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: stratosCaretBlink 1s steps(2) infinite;
+  }
+  @keyframes stratosCaretBlink {
+    to { visibility: hidden; }
+  }
+
+  /* Mobile: let chat window span the viewport instead of clipping off-screen */
+  @media (max-width: 480px) {
+    #stratos-chat-window {
+      left: 12px;
+      right: 12px;
+      width: auto;
+      max-height: calc(100vh - 110px);
+    }
   }
 </style>
 
@@ -1639,13 +1664,57 @@ section {
     const messagesDiv = document.getElementById('stratos-chat-messages');
     const inputEl = document.getElementById('stratos-chat-input');
 
-    // --- Dragging Logic ---
+    // Tooltip is visible whenever chat is closed AND not being dragged.
+    function isChatOpen() { return chatWindow.style.display === 'flex'; }
+    function showTooltip() { chatTooltip.style.display = ''; }
+    function hideTooltip() { chatTooltip.style.display = 'none'; }
+
+    // --- Typewriter rotation in the tooltip ---
+    const TOOLTIP_PHRASES = [
+      'Chat with us',
+      'Need a quote?',
+      'Service at your hangar?',
+      'Ask about coatings',
+      'Which airports?'
+    ];
+    let phraseIdx = 0;
+    let charIdx = TOOLTIP_PHRASES[0].length; // start already showing full first phrase
+    let erasing = false;
+    let typewriterTimer = null;
+
+    function typewriterTick() {
+      const current = TOOLTIP_PHRASES[phraseIdx];
+      if (!erasing) {
+        charIdx++;
+        chatTooltip.textContent = current.slice(0, charIdx);
+        if (charIdx >= current.length) {
+          erasing = true;
+          typewriterTimer = setTimeout(typewriterTick, 2200); // read pause
+          return;
+        }
+        typewriterTimer = setTimeout(typewriterTick, 60);
+      } else {
+        charIdx--;
+        chatTooltip.textContent = current.slice(0, charIdx);
+        if (charIdx <= 0) {
+          erasing = false;
+          phraseIdx = (phraseIdx + 1) % TOOLTIP_PHRASES.length;
+          typewriterTimer = setTimeout(typewriterTick, 300); // gap before new phrase
+          return;
+        }
+        typewriterTimer = setTimeout(typewriterTick, 30);
+      }
+    }
+    // Start cycling after the user has had a moment to read the initial phrase.
+    typewriterTimer = setTimeout(() => { erasing = true; typewriterTick(); }, 2500);
+
+    // --- Dragging logic ---
     let isDragging = false;
     let dragged = false;
     let startX, startY, initialLeft, initialTop;
 
     function dragStart(e) {
-      if (e.type === "touchstart") {
+      if (e.type === 'touchstart') {
         startX = e.touches[0].clientX;
         startY = e.touches[0].clientY;
       } else {
@@ -1657,7 +1726,7 @@ section {
       initialLeft = rect.left;
       initialTop = rect.top;
 
-      // Switch from right/bottom positioning to left/top for math
+      // Switch from right/bottom to left/top anchoring so drag math is straightforward.
       chatContainer.style.right = 'auto';
       chatContainer.style.bottom = 'auto';
       chatContainer.style.left = initialLeft + 'px';
@@ -1671,7 +1740,7 @@ section {
       if (!isDragging) return;
 
       let currentX, currentY;
-      if (e.type === "touchmove") {
+      if (e.type === 'touchmove') {
         currentX = e.touches[0].clientX;
         currentY = e.touches[0].clientY;
       } else {
@@ -1684,7 +1753,7 @@ section {
 
       if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
         dragged = true;
-        chatTooltip.style.display = 'none';
+        hideTooltip();
       }
 
       chatContainer.style.left = (initialLeft + diffX) + 'px';
@@ -1692,7 +1761,12 @@ section {
     }
 
     function dragEnd() {
+      if (!isDragging) return;
       isDragging = false;
+      // After a real drag, bring the tooltip back if the chat is still closed.
+      if (dragged && !isChatOpen()) {
+        showTooltip();
+      }
     }
 
     chatBtn.addEventListener('mousedown', dragStart);
@@ -1708,11 +1782,19 @@ section {
         dragged = false;
         return;
       }
-      chatTooltip.style.display = 'none';
-      chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+      if (isChatOpen()) {
+        chatWindow.style.display = 'none';
+        showTooltip();
+      } else {
+        chatWindow.style.display = 'flex';
+        hideTooltip();
+      }
     };
 
-    closeChat.onclick = () => chatWindow.style.display = 'none';
+    closeChat.onclick = () => {
+      chatWindow.style.display = 'none';
+      showTooltip();
+    };
 
     async function sendStratosMessage() {
       const text = inputEl.value.trim();
@@ -1722,7 +1804,7 @@ section {
       inputEl.value = '';
 
       const loadingId = 'loading-' + Date.now();
-      appendMessage("...", 'bot', loadingId);
+      appendMessage('...', 'bot', loadingId);
 
       try {
         const response = await fetch('https://us-central1-bakers-agent.cloudfunctions.net/stratos-chat-v1', {
@@ -1736,7 +1818,7 @@ section {
         appendMessage(data.reply, 'bot');
       } catch (err) {
         document.getElementById(loadingId).remove();
-        appendMessage("Sorry, I am having trouble connecting right now. Please call us at 424-288-8882.", 'bot');
+        appendMessage('Sorry, I am having trouble connecting right now. Please call us at 424-288-8882.', 'bot');
       }
     }
 
@@ -1749,7 +1831,7 @@ section {
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    // Expose send function for inline handlers
+    // Expose send function for inline onclick / onkeypress handlers
     window.sendStratosMessage = sendStratosMessage;
   })();
 </script>
