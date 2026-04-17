@@ -1798,11 +1798,11 @@ section {
     setInterval(tick, 1000);
 
     // Kick off the first scramble quickly so a new visitor sees one within
-    // ~1.5s of load, then continue firing reliably every 5.5s. Hard
-    // setInterval instead of recursive setTimeout so a single silent
-    // failure can't leave the ticker static.
-    setTimeout(fireRandomScramble, 1500);
-    setInterval(fireRandomScramble, 5500);
+    // ~1s of load, then fire reliably every 3.7s (50% more frequent than
+    // the previous 5.5s cadence). Hard setInterval instead of recursive
+    // setTimeout so a single silent failure can't leave the ticker static.
+    setTimeout(fireRandomScramble, 1000);
+    setInterval(fireRandomScramble, 3700);
   })();
 </script>
 <!-- ── End Stratos FIDS Ticker ──────── -->
