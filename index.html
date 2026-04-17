@@ -1497,13 +1497,18 @@ section {
     bottom: 20px;
     right: 20px;
     z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    /* Container sized to the button only — tooltip is absolute-positioned
+       to the left, so its visibility can't shift the button. */
+    width: 60px;
+    height: 60px;
     touch-action: none; /* Prevents screen scrolling while dragging on mobile */
   }
 
   #stratos-chat-tooltip {
+    position: absolute;
+    right: calc(100% + 12px); /* floats 12px to the left of the button */
+    top: 50%;
+    transform: translateY(-50%);
     background: #fff;
     color: #111;
     padding: 6px 14px;
@@ -1514,7 +1519,7 @@ section {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     pointer-events: none;
     user-select: none;
-    /* Lock width so typing animation doesn't reposition the button */
+    /* Locked width keeps the typewriter from looking jumpy */
     min-width: 190px;
     text-align: left;
     white-space: nowrap;
@@ -1798,6 +1803,40 @@ section {
     document.addEventListener('touchmove', dragAction, { passive: false });
     document.addEventListener('touchend', dragEnd);
 
+    // Position the chat window next to wherever the bubble currently is.
+    // Mobile leaves it to the CSS media query (full-width pinned at bottom).
+    function positionChatWindow() {
+      const isMobile = window.innerWidth <= 480;
+      if (isMobile) {
+        // Clear any inline overrides so the @media rule takes effect.
+        chatWindow.style.right = '';
+        chatWindow.style.bottom = '';
+        chatWindow.style.left = '';
+        chatWindow.style.top = '';
+        return;
+      }
+      const btnRect = chatBtn.getBoundingClientRect();
+      const winW = 350, winH = 450, gap = 10, pad = 10;
+
+      // Default: window sits above the bubble, right edge aligned.
+      let rightPx = window.innerWidth - btnRect.right;
+      let bottomPx = window.innerHeight - btnRect.top + gap;
+
+      // Clamp so the window doesn't run off the top / left.
+      if (window.innerHeight - bottomPx - winH < pad) {
+        bottomPx = window.innerHeight - winH - pad;
+      }
+      if (window.innerWidth - rightPx - winW < pad) {
+        rightPx = window.innerWidth - winW - pad;
+      }
+      if (rightPx < pad) rightPx = pad;
+
+      chatWindow.style.right = rightPx + 'px';
+      chatWindow.style.bottom = bottomPx + 'px';
+      chatWindow.style.left = '';
+      chatWindow.style.top = '';
+    }
+
     chatBtn.onclick = () => {
       if (dragged) {
         dragged = false;
@@ -1807,6 +1846,7 @@ section {
         chatWindow.classList.remove('open');
         showTooltip();
       } else {
+        positionChatWindow();
         chatWindow.classList.add('open');
         hideTooltip();
       }
@@ -1816,6 +1856,11 @@ section {
       chatWindow.classList.remove('open');
       showTooltip();
     };
+
+    // Re-position on viewport resize while open (phone rotation, window resize)
+    window.addEventListener('resize', () => {
+      if (isChatOpen()) positionChatWindow();
+    });
 
     async function sendStratosMessage() {
       const text = inputEl.value.trim();
