@@ -1815,35 +1815,41 @@ section {
         return;
       }
       const btnRect = chatBtn.getBoundingClientRect();
-      const winW = 350, winH = 450, gap = 10, pad = 10;
+      const winW = 350, baseWinH = 450, gap = 10, pad = 10, minWinH = 260;
       // documentElement.clientWidth/Height excludes the scrollbar — matches the
       // reference frame CSS `right`/`bottom` use. Plain window.innerWidth
       // includes the scrollbar on Chrome/Windows and causes ~16px drift.
       const vpW = document.documentElement.clientWidth;
       const vpH = document.documentElement.clientHeight;
 
-      // Horizontal: align window's right edge with the bubble's right edge,
-      // then clamp so the window never runs off the left of the viewport.
+      // Horizontal: align window's right edge with the bubble's right edge.
+      // If that would overflow the left edge, left-align with the bubble
+      // instead (much less jarring than forcing the window past the bubble).
       let rightPx = vpW - btnRect.right;
-      if (rightPx + winW > vpW - pad) rightPx = vpW - winW - pad;
-      if (rightPx < pad) rightPx = pad;
+      if (rightPx + winW > vpW - pad) {
+        rightPx = vpW - btnRect.left - winW;
+        if (rightPx < pad) rightPx = pad;
+      }
 
-      // Vertical: prefer above the bubble. If not enough headroom, flip below.
-      const spaceAbove = btnRect.top - pad;
-      const spaceBelow = vpH - btnRect.bottom - pad;
-      const fitsAbove = spaceAbove >= winH + gap;
+      // Vertical: pick whichever side has more space, then constrain the
+      // window height to what actually fits (min 260px). This prevents
+      // overlap when the bubble is in the vertical middle of the viewport.
+      const spaceAbove = btnRect.top - pad - gap;
+      const spaceBelow = vpH - btnRect.bottom - pad - gap;
+      const placeAbove = spaceAbove >= spaceBelow;
+      const available = Math.max(placeAbove ? spaceAbove : spaceBelow, minWinH);
+      const winH = Math.min(baseWinH, available);
+      chatWindow.style.height = winH + 'px';
 
       chatWindow.style.right = rightPx + 'px';
       chatWindow.style.left = '';
 
-      if (fitsAbove || spaceAbove >= spaceBelow) {
-        // Place above the bubble.
+      if (placeAbove) {
         let bottomPx = vpH - btnRect.top + gap;
         if (vpH - bottomPx - winH < pad) bottomPx = vpH - winH - pad;
         chatWindow.style.bottom = bottomPx + 'px';
         chatWindow.style.top = '';
       } else {
-        // Place below the bubble.
         let topPx = btnRect.bottom + gap;
         if (topPx + winH > vpH - pad) topPx = vpH - winH - pad;
         chatWindow.style.top = topPx + 'px';
