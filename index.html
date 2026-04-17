@@ -1494,7 +1494,9 @@ section {
 
   #stratos-chat-container {
     position: fixed;
-    bottom: 20px;
+    /* Sits 1.5 bubble-heights up from the corner so it doesn't cover the
+       PWA install prompt or any other bottom-pinned chrome. */
+    bottom: 110px;
     right: 20px;
     z-index: 9999;
     /* Container sized to the button only — tooltip is absolute-positioned
@@ -1548,8 +1550,9 @@ section {
 
   #stratos-chat-window {
     position: fixed;
-    /* Sits just above the bubble; the 10px gap keeps them visually linked. */
-    bottom: 90px;
+    /* Sits just above the bubble; the 10px gap keeps them visually linked.
+       Bubble is at bottom:110 with height 60, +10 gap = 180. */
+    bottom: 180px;
     right: 20px;
     width: 350px;
     height: 450px;
