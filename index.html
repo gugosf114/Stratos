@@ -76,7 +76,8 @@ body {
 /* ── Navigation ──────────────────────────── */
 .nav {
   position: fixed;
-  top: 0;
+  /* Sits 36px from the top to make room for the fixed aviation ticker. */
+  top: 36px;
   left: 0;
   right: 0;
   z-index: 900;
@@ -1482,6 +1483,117 @@ section {
 </style>
 </head>
 <body>
+
+<!-- ── Stratos Aviation Ops Ticker ──────── -->
+<style>
+  #stratos-ticker-banner {
+    /* Fixed at the very top so it stays visible while the user scrolls.
+       The nav sits 36px below so the two are stacked cleanly. */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 36px;
+    background-color: #f1c40f; /* Premium Aviation Yellow */
+    color: #111;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid #d4ac0d;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    z-index: 1001; /* Above .nav (900) */
+  }
+
+  #stratos-ticker-banner .ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  #stratos-ticker-banner .ticker-content {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%; /* Start off-screen to the right */
+    animation: ticker-scroll 45s linear infinite;
+  }
+
+  #stratos-ticker-banner .ticker-content:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes ticker-scroll {
+    0%   { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+  }
+
+  #stratos-ticker-banner .clock-item {
+    display: inline-block;
+    margin-right: 60px;
+  }
+
+  #stratos-ticker-banner .clock-city {
+    color: #000;
+    opacity: 0.7;
+    margin-right: 8px;
+    text-transform: uppercase;
+  }
+
+  #stratos-ticker-banner .clock-time {
+    color: #111;
+  }
+</style>
+
+<div id="stratos-ticker-banner">
+  <div class="ticker-wrap">
+    <div class="ticker-content" id="stratos-live-clocks"></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const HUBS = [
+      { name: 'LAX (PST)', zone: 'America/Los_Angeles' },
+      { name: 'JFK (EST)', zone: 'America/New_York' },
+      { name: 'LHR (GMT)', zone: 'Europe/London' },
+      { name: 'DXB (GST)', zone: 'Asia/Dubai' },
+      { name: 'HND (JST)', zone: 'Asia/Tokyo' }
+    ];
+
+    // Cache formatters once so we're not creating 10 Intl.DateTimeFormat
+    // instances every second.
+    const FORMATTERS = HUBS.map(h => new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false, timeZone: h.zone
+    }));
+
+    const target = document.getElementById('stratos-live-clocks');
+
+    function renderClocks() {
+      const now = new Date();
+      let html = '';
+      // Duplicate the set so the scroll loop has no visible gap.
+      for (let pass = 0; pass < 2; pass++) {
+        for (let i = 0; i < HUBS.length; i++) {
+          const t = FORMATTERS[i].format(now);
+          html += '<span class="clock-item">' +
+                  '<span class="clock-city">' + HUBS[i].name + '</span>' +
+                  '<span class="clock-time">' + t + '</span></span>';
+        }
+      }
+      target.innerHTML = html;
+    }
+
+    renderClocks();
+    setInterval(renderClocks, 1000);
+  })();
+</script>
+<!-- ── End Stratos Aviation Ops Ticker ──────── -->
+
 
 <!-- ── Stratos Concierge Chat Widget ──────── -->
 <style>
