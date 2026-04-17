@@ -1617,6 +1617,19 @@ section {
     100% { transform: rotateX(0deg); }
   }
 
+  /* Faster flip variant used during the "searching" scramble — a real
+     Solari board flips through many characters rapidly when looking for
+     a new value. Linear timing at 110ms reads as mechanical cadence. */
+  #stratos-ticker-banner .split-flap-char.scrambling {
+    animation: split-flip-fast 110ms linear;
+  }
+  @keyframes split-flip-fast {
+    0%   { transform: rotateX(0deg); }
+    50%  { transform: rotateX(-90deg); }
+    50.1%{ transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
+  }
+
   /* Each clock item needs perspective for the 3D flip to read correctly */
   #stratos-ticker-banner .clock-item { perspective: 180px; }
 </style>
@@ -1718,8 +1731,73 @@ section {
       }
     }
 
+    // ── "Searching" scramble — the Solari trick where a board cycles
+    //    through random characters before landing on its target. Here the
+    //    target is the SAME character it started with, so it reads as a
+    //    pure animation flourish without actually changing the data.
+    const SCRAMBLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const SCRAMBLE_STEPS_MIN = 6;
+    const SCRAMBLE_STEPS_MAX = 9;
+    const SCRAMBLE_STEP_MS = 120;
+    const SCRAMBLE_CASCADE_MS = 45; // delay between successive letter scrambles
+
+    function scrambleOneFlip(tile, newChar) {
+      tile.classList.add('scrambling');
+      // Glyph swaps at ~50% of the fast flip — invisible, edge-on.
+      setTimeout(function() { tile.textContent = newChar; }, 55);
+      setTimeout(function() { tile.classList.remove('scrambling'); }, 115);
+    }
+
+    function scrambleTile(tile) {
+      // Capture the original glyph so we can land on it at the end.
+      const original = tile.textContent;
+      const totalSteps = SCRAMBLE_STEPS_MIN +
+        Math.floor(Math.random() * (SCRAMBLE_STEPS_MAX - SCRAMBLE_STEPS_MIN + 1));
+      let step = 0;
+
+      function next() {
+        step++;
+        const isLast = step === totalSteps;
+        const ch = isLast
+          ? original
+          : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        scrambleOneFlip(tile, ch);
+        if (!isLast) setTimeout(next, SCRAMBLE_STEP_MS);
+      }
+      next();
+    }
+
+    function scrambleCityRow(hubIdx) {
+      // Both marquee copies — scramble both so a viewer watching the
+      // second copy sees the same event as the first.
+      for (let pass = 0; pass < 2; pass++) {
+        const row = target.querySelector(
+          '[data-pass="' + pass + '"][data-hub="' + hubIdx + '"]'
+        );
+        if (!row) continue;
+        // Only direct-child tiles of the clock-item (the city-name letters).
+        // Time tiles live inside .time-tiles and are excluded.
+        const cityTiles = row.querySelectorAll(':scope > .split-flap-char');
+        cityTiles.forEach(function(tile, i) {
+          setTimeout(function() { scrambleTile(tile); }, i * SCRAMBLE_CASCADE_MS);
+        });
+      }
+    }
+
+    function scheduleNextScramble() {
+      // Random 3.5–8s gap between scrambles. Persistent enough to be
+      // noticed within a minute of looking at the board.
+      const delay = 3500 + Math.floor(Math.random() * 4500);
+      setTimeout(function() {
+        const hubIdx = Math.floor(Math.random() * HUBS.length);
+        scrambleCityRow(hubIdx);
+        scheduleNextScramble();
+      }, delay);
+    }
+
     buildBoardOnce();
     setInterval(tick, 1000);
+    scheduleNextScramble();
   })();
 </script>
 <!-- ── End Stratos FIDS Ticker ──────── -->
