@@ -1816,8 +1816,11 @@ section {
       }
       const btnRect = chatBtn.getBoundingClientRect();
       const winW = 350, winH = 450, gap = 10, pad = 10;
-      const vpW = window.innerWidth;
-      const vpH = window.innerHeight;
+      // documentElement.clientWidth/Height excludes the scrollbar — matches the
+      // reference frame CSS `right`/`bottom` use. Plain window.innerWidth
+      // includes the scrollbar on Chrome/Windows and causes ~16px drift.
+      const vpW = document.documentElement.clientWidth;
+      const vpH = document.documentElement.clientHeight;
 
       // Horizontal: align window's right edge with the bubble's right edge,
       // then clamp so the window never runs off the left of the viewport.
