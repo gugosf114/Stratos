@@ -1488,21 +1488,20 @@ section {
 
 <!-- ── Stratos Split-Flap Departures Board ──────── -->
 <style>
-  /* Split-flap housing — premium aviation yellow with dark tile cards */
+  /* Mechanical split-flap housing — dark matte with gold accent rail */
   #stratos-ticker-banner {
     position: fixed;
     top: 0; left: 0; right: 0;
     width: 100%;
     height: 44px;
-    background-color: #f1c40f;
+    background-color: #111;
+    border-bottom: 2px solid #f1c40f; /* gold accent rail */
     display: flex;
     align-items: center;
     overflow: hidden;
-    /* Subtle dark vignette at top/bottom edges so the yellow reads as a
-       recessed housing rather than a flat stripe. */
     box-shadow:
-      inset 0 -4px 8px rgba(0, 0, 0, 0.25),
-      inset 0  4px 8px rgba(0, 0, 0, 0.18);
+      inset 0 -5px 10px rgba(0, 0, 0, 0.6),
+      inset 0  5px 10px rgba(0, 0, 0, 0.4);
     z-index: 1001;
   }
 
@@ -1556,7 +1555,8 @@ section {
       #262626 49.5%,
       #1a1a1a 50.5%,
       #1e1e1e 100%);
-    color: #ececec;
+    /* Gold glyphs on dark tiles — premium aviation board, not diner-sign white */
+    color: #f1c40f;
     padding: 5px 5px;
     margin: 0 1px;
     min-width: 0.9em;
@@ -1567,7 +1567,10 @@ section {
     box-shadow:
       inset 0  1px 0 rgba(255, 255, 255, 0.08),
       0 1px 2px rgba(0, 0, 0, 0.9);
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
+    /* Dark ink shadow + soft gold halo so the glyph feels backlit on the tile */
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.85),
+      0 0 6px rgba(241, 196, 15, 0.28);
     transform-origin: center center;
     backface-visibility: hidden;
     will-change: transform;
