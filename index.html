@@ -76,8 +76,8 @@ body {
 /* ── Navigation ──────────────────────────── */
 .nav {
   position: fixed;
-  /* Sits below the fixed aviation ticker (28px tall). */
-  top: 28px;
+  /* Sits below the fixed split-flap ticker (44px tall). */
+  top: 44px;
   left: 0;
   right: 0;
   z-index: 900;
@@ -1486,41 +1486,23 @@ section {
 </head>
 <body>
 
-<!-- ── Stratos FIDS (Flight Information Display) Ticker ──────── -->
+<!-- ── Stratos Split-Flap Departures Board ──────── -->
 <style>
-  /* FIDS color system — authentic amber-on-black departures board */
+  /* Mechanical split-flap housing — dark matte with gold accent rail */
   #stratos-ticker-banner {
     position: fixed;
     top: 0; left: 0; right: 0;
     width: 100%;
-    height: 28px;
-    /* Deep matte black with a subtle amber-wash base — not pure #000 so
-       the text glow reads as "monitor light" rather than flat vector. */
-    background-color: #0a0806;
-    background-image:
-      /* ultra-faint horizontal scanlines for CRT/LED authenticity */
-      repeating-linear-gradient(
-        to bottom,
-        rgba(255, 176, 32, 0.03) 0px,
-        rgba(255, 176, 32, 0.03) 1px,
-        transparent 1px,
-        transparent 2px
-      ),
-      /* slight amber falloff from the top edge */
-      linear-gradient(to bottom,
-        rgba(255, 176, 32, 0.06) 0%,
-        transparent 40%);
-    color: #ffb020;
+    height: 44px;
+    background-color: #111;
+    border-bottom: 2px solid #f1c40f; /* gold accent rail */
     display: flex;
     align-items: center;
     overflow: hidden;
-    border-bottom: 1px solid rgba(255, 176, 32, 0.18);
     box-shadow:
-      inset 0 0 30px rgba(255, 176, 32, 0.04),
-      0 1px 0 rgba(0, 0, 0, 0.6);
-    z-index: 1001; /* above .nav (900) */
-    font-size: 11px;
-    letter-spacing: 0.04em;
+      inset 0 -5px 10px rgba(0, 0, 0, 0.6),
+      inset 0  5px 10px rgba(0, 0, 0, 0.4);
+    z-index: 1001;
   }
 
   #stratos-ticker-banner .ticker-wrap {
@@ -1528,128 +1510,111 @@ section {
     overflow: hidden;
     white-space: nowrap;
     box-sizing: border-box;
-    /* mask the edges so text fades in/out instead of hard-clipping */
+    /* Fade edges so tiles ease in/out instead of hard-clipping */
     -webkit-mask-image: linear-gradient(to right,
-      transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
+      transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
     mask-image: linear-gradient(to right,
-      transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
+      transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
   }
 
   #stratos-ticker-banner .ticker-content {
     display: inline-block;
     white-space: nowrap;
-    /* Seamless marquee: 2x duplicated content, translate to -50% so the
-       second copy lands where the first started. No gap, no pause. */
-    animation: fids-scroll 75s linear infinite;
+    /* Seamless marquee: content duplicated once, animate to -50% so the
+       second copy aligns where the first was. Zero gap between cycles. */
+    animation: split-scroll 70s linear infinite;
     will-change: transform;
   }
-
   #stratos-ticker-banner .ticker-content:hover {
     animation-play-state: paused;
   }
-
-  @keyframes fids-scroll {
+  @keyframes split-scroll {
     0%   { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(-50%, 0, 0); }
   }
 
-  /* ── One departures-board row entry ─────────────────────── */
-  #stratos-ticker-banner .fids-row {
+  /* One city entry */
+  #stratos-ticker-banner .clock-item {
     display: inline-flex;
-    align-items: baseline;
-    gap: 10px;
-    padding: 0 4px;
-  }
-
-  /* Live status dot — pulses like an LED on the monitor */
-  #stratos-ticker-banner .fids-dot {
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #4ade80;
-    box-shadow: 0 0 4px #4ade80, 0 0 8px rgba(74, 222, 128, 0.5);
-    transform: translateY(-1px);
-    animation: fids-pulse 1.8s infinite ease-in-out;
-  }
-  @keyframes fids-pulse {
-    0%, 100% { opacity: 1;    transform: translateY(-1px) scale(1); }
-    50%      { opacity: 0.5;  transform: translateY(-1px) scale(0.85); }
-  }
-
-  /* City name — Big Shoulders Display, the station-signage / departures
-     board typography. Heavy, tall, condensed, spaced caps. */
-  #stratos-ticker-banner .fids-city {
-    font-family: 'Big Shoulders Display', 'Impact', sans-serif;
-    font-weight: 700;
+    align-items: center;
+    margin-right: 56px;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #ffb020;
-    text-shadow:
-      0 0 6px rgba(255, 176, 32, 0.45),
-      0 0 2px rgba(255, 176, 32, 0.8);
+    font-weight: bold;
   }
 
-  /* Time — monospace, tabular figures, slightly dimmer than city name
-     so the hierarchy reads: place first, time second */
-  #stratos-ticker-banner .fids-time {
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    font-variant-numeric: tabular-nums;
-    font-weight: 600;
-    font-size: 11px;
-    color: #ffc84a;
-    text-shadow: 0 0 4px rgba(255, 200, 74, 0.35);
-    /* Each digit lives in its own 3D container so the split-flap rotation
-       is crisp and doesn't blur the non-flipping siblings. */
-    perspective: 140px;
-  }
-
-  /* Individual character cell — the split-flap tile */
-  #stratos-ticker-banner .fids-char {
+  /* The mechanical split-flap tile — this is the whole aesthetic:
+     dark-grey card, rounded corners, off-white type, and a hard black
+     line bisecting the tile horizontally to imply the top/bottom halves
+     of a physical Solari flap. */
+  #stratos-ticker-banner .split-flap-char {
     display: inline-block;
-    min-width: 0.58em;
+    position: relative;
+    background: linear-gradient(to bottom,
+      #2a2a2a 0%,
+      #262626 49.5%,
+      #1a1a1a 50.5%,
+      #1e1e1e 100%);
+    color: #ececec;
+    padding: 5px 5px;
+    margin: 0 1px;
+    min-width: 0.9em;
     text-align: center;
+    line-height: 1;
+    text-transform: uppercase;
+    border-radius: 3px;
+    box-shadow:
+      inset 0  1px 0 rgba(255, 255, 255, 0.08),
+      0 1px 2px rgba(0, 0, 0, 0.9);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.8);
     transform-origin: center center;
     backface-visibility: hidden;
     will-change: transform;
   }
-  #stratos-ticker-banner .fids-char.flipping {
-    animation: fids-flip 420ms cubic-bezier(.55, .05, .35, 1);
+
+  /* The black split line bisecting each tile — the defining split-flap cue */
+  #stratos-ticker-banner .split-flap-char::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #000;
+    transform: translateY(-0.5px);
+    z-index: 1;
+    pointer-events: none;
   }
-  /* Two-phase flip: down to 90° (invisible edge-on), JS swaps the glyph,
-     then rotates up from -90° back to 0°. Reads exactly like a Solari tile. */
-  @keyframes fids-flip {
+
+  /* Gap tile for spaces between words */
+  #stratos-ticker-banner .split-flap-space {
+    display: inline-block;
+    width: 6px;
+  }
+
+  /* Wider gap before / after the time block — visual break between
+     city name and time, like real split-flap boards do */
+  #stratos-ticker-banner .split-flap-gutter {
+    display: inline-block;
+    width: 14px;
+  }
+
+  /* Split-flap flip animation: tile rotates edge-on (90°), JS swaps the
+     glyph invisibly at the mid-point, then rotates up from the opposite
+     side. The timing curve mimics mechanical momentum — accelerates, then
+     lands with a touch of overshoot. */
+  #stratos-ticker-banner .split-flap-char.flipping {
+    animation: split-flip 460ms cubic-bezier(.55, 0, .35, 1);
+  }
+  @keyframes split-flip {
     0%   { transform: rotateX(0deg); }
     48%  { transform: rotateX(-90deg); }
     52%  { transform: rotateX(90deg); }
     100% { transform: rotateX(0deg); }
   }
 
-  /* IATA code — even dimmer, smaller, the "metadata" slot */
-  #stratos-ticker-banner .fids-code {
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    font-weight: 600;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: rgba(255, 176, 32, 0.55);
-  }
-
-  /* Narrow middle-dot separators between fields within a row */
-  #stratos-ticker-banner .fids-sep {
-    color: rgba(255, 176, 32, 0.32);
-    font-size: 10px;
-  }
-
-  /* Tall vertical rule between rows — the board's column divider */
-  #stratos-ticker-banner .fids-rule {
-    display: inline-block;
-    width: 1px;
-    height: 14px;
-    background: rgba(255, 176, 32, 0.22);
-    margin: 0 22px;
-    transform: translateY(2px);
-  }
+  /* Each clock item needs perspective for the 3D flip to read correctly */
+  #stratos-ticker-banner .clock-item { perspective: 180px; }
 </style>
 
 <div id="stratos-ticker-banner">
@@ -1660,21 +1625,19 @@ section {
 
 <script>
   (function() {
-    // Real-airport-to-real-city mapping. Dashboard-grade data, not just codes.
     const HUBS = [
-      { city: 'Van Nuys',     code: 'VNY', zone: 'America/Los_Angeles' }, // Stratos home turf
-      { city: 'Los Angeles',  code: 'LAX', zone: 'America/Los_Angeles' },
-      { city: 'New York',     code: 'JFK', zone: 'America/New_York'    },
-      { city: 'Miami',        code: 'MIA', zone: 'America/New_York'    },
-      { city: 'London',       code: 'LHR', zone: 'Europe/London'       },
-      { city: 'Paris',        code: 'CDG', zone: 'Europe/Paris'        },
-      { city: 'Dubai',        code: 'DXB', zone: 'Asia/Dubai'          },
-      { city: 'Singapore',    code: 'SIN', zone: 'Asia/Singapore'      },
-      { city: 'Tokyo',        code: 'HND', zone: 'Asia/Tokyo'          },
-      { city: 'Sydney',       code: 'SYD', zone: 'Australia/Sydney'    }
+      { city: 'Van Nuys',     zone: 'America/Los_Angeles' },
+      { city: 'Los Angeles',  zone: 'America/Los_Angeles' },
+      { city: 'New York',     zone: 'America/New_York'    },
+      { city: 'Miami',        zone: 'America/New_York'    },
+      { city: 'London',       zone: 'Europe/London'       },
+      { city: 'Paris',        zone: 'Europe/Paris'        },
+      { city: 'Dubai',        zone: 'Asia/Dubai'          },
+      { city: 'Singapore',    zone: 'Asia/Singapore'      },
+      { city: 'Tokyo',        zone: 'Asia/Tokyo'          },
+      { city: 'Sydney',       zone: 'Australia/Sydney'    }
     ];
 
-    // Cache formatters once so we're not spinning up 10 Intl instances per second
     const FORMATTERS = HUBS.map(h => new Intl.DateTimeFormat('en-US', {
       hour: '2-digit', minute: '2-digit', second: '2-digit',
       hour12: false, timeZone: h.zone
@@ -1682,9 +1645,15 @@ section {
 
     const target = document.getElementById('stratos-live-clocks');
 
-    // Build the DOM ONCE and then update character-by-character. Blowing
-    // away innerHTML every second would also blow away any in-flight
-    // flip animations — not what we want.
+    // Render one character. Space becomes a small gap, everything else a tile.
+    function charHtml(ch) {
+      if (ch === ' ') return '<span class="split-flap-space"></span>';
+      return '<span class="split-flap-char">' + ch + '</span>';
+    }
+
+    // City name → full-string fixed tiles (never flip). Times are built
+    // separately so only the time digits get the flipping treatment when
+    // they change.
     function buildBoardOnce() {
       const now = new Date();
       let html = '';
@@ -1692,54 +1661,53 @@ section {
         for (let i = 0; i < HUBS.length; i++) {
           const h = HUBS[i];
           const t = FORMATTERS[i].format(now);
-          // Wrap each character in its own span so we can flip individually.
-          let timeHtml = '';
-          for (let k = 0; k < t.length; k++) {
-            timeHtml += '<span class="fids-char">' + t[k] + '</span>';
-          }
-          html += '<span class="fids-row" data-pass="' + pass + '" data-hub="' + i + '">' +
-                   '<span class="fids-dot" aria-hidden="true"></span>' +
-                   '<span class="fids-city">' + h.city + '</span>' +
-                   '<span class="fids-sep">·</span>' +
-                   '<span class="fids-time">' + timeHtml + '</span>' +
-                   '<span class="fids-sep">·</span>' +
-                   '<span class="fids-code">' + h.code + '</span>' +
-                 '</span>' +
-                 '<span class="fids-rule" aria-hidden="true"></span>';
+
+          let cityTiles = '';
+          const cityUpper = h.city.toUpperCase();
+          for (let k = 0; k < cityUpper.length; k++) cityTiles += charHtml(cityUpper[k]);
+
+          let timeTiles = '';
+          for (let k = 0; k < t.length; k++) timeTiles += charHtml(t[k]);
+
+          html +=
+            '<span class="clock-item" data-pass="' + pass + '" data-hub="' + i + '">' +
+              cityTiles +
+              '<span class="split-flap-gutter"></span>' +
+              '<span class="time-tiles">' + timeTiles + '</span>' +
+            '</span>';
         }
       }
       target.innerHTML = html;
     }
 
-    // Flip a single character tile: rotate down to edge-on, swap glyph
-    // at the halfway point (invisible), rotate up from the opposite side.
-    // Classic Solari mechanism.
-    function flipChar(el, newChar) {
+    function flipTile(el, newChar) {
       if (el.classList.contains('flipping')) {
-        // Already mid-flip — just update text at next tick, don't stack.
         el.textContent = newChar;
         return;
       }
       el.classList.add('flipping');
-      // Swap at ~50% of the 420ms animation, when the tile is edge-on.
-      setTimeout(function() { el.textContent = newChar; }, 210);
-      setTimeout(function() { el.classList.remove('flipping'); }, 440);
+      // Swap glyph at ~50% of 460ms, when the tile is edge-on and invisible.
+      setTimeout(function() { el.textContent = newChar; }, 230);
+      setTimeout(function() { el.classList.remove('flipping'); }, 480);
     }
 
     function tick() {
       const now = new Date();
       for (let i = 0; i < HUBS.length; i++) {
         const newTime = FORMATTERS[i].format(now);
-        // Both marquee copies carry identical time data — update both.
         for (let pass = 0; pass < 2; pass++) {
           const row = target.querySelector(
-            '[data-pass="' + pass + '"][data-hub="' + i + '"]'
+            '[data-pass="' + pass + '"][data-hub="' + i + '"] .time-tiles'
           );
           if (!row) continue;
-          const chars = row.querySelectorAll('.fids-char');
-          for (let k = 0; k < newTime.length && k < chars.length; k++) {
-            if (chars[k].textContent !== newTime[k]) {
-              flipChar(chars[k], newTime[k]);
+          // Only real character tiles (skip .split-flap-space)
+          const tiles = row.querySelectorAll('.split-flap-char');
+          let idx = 0;
+          for (let k = 0; k < newTime.length; k++) {
+            if (newTime[k] === ' ') continue;
+            const tile = tiles[idx++];
+            if (tile && tile.textContent !== newTime[k]) {
+              flipTile(tile, newTime[k]);
             }
           }
         }
