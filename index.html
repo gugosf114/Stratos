@@ -1543,7 +1543,7 @@ section {
 
   #stratos-chat-window {
     position: fixed;
-    /* Positioned relative to the viewport, not the button */
+    /* Sits just above the bubble; the 10px gap keeps them visually linked. */
     bottom: 90px;
     right: 20px;
     width: 350px;
@@ -1552,10 +1552,21 @@ section {
     border: 1px solid #eaeaea;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    display: none;
+    display: flex;
     flex-direction: column;
     z-index: 9999;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    /* Glide-in: closed state scales down and drops 20px, fades out, cannot receive events */
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+    transform-origin: bottom right;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+  }
+  #stratos-chat-window.open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
   }
 
   #stratos-chat-header {
@@ -1670,7 +1681,7 @@ section {
     const inputEl = document.getElementById('stratos-chat-input');
 
     // Tooltip is visible whenever chat is closed AND not being dragged.
-    function isChatOpen() { return chatWindow.style.display === 'flex'; }
+    function isChatOpen() { return chatWindow.classList.contains('open'); }
     function showTooltip() { chatTooltip.style.display = ''; }
     function hideTooltip() { chatTooltip.style.display = 'none'; }
 
@@ -1727,15 +1738,13 @@ section {
         startY = e.clientY;
       }
 
+      // Capture the container's current position for drag math, but DO NOT yet
+      // swap the right/bottom anchor — we only do that if the user actually drags.
+      // Swapping on every mousedown was causing the button to jump left on click
+      // (tooltip would hide, container would shrink left-anchored).
       const rect = chatContainer.getBoundingClientRect();
       initialLeft = rect.left;
       initialTop = rect.top;
-
-      // Switch from right/bottom to left/top anchoring so drag math is straightforward.
-      chatContainer.style.right = 'auto';
-      chatContainer.style.bottom = 'auto';
-      chatContainer.style.left = initialLeft + 'px';
-      chatContainer.style.top = initialTop + 'px';
 
       isDragging = true;
       dragged = false;
@@ -1756,13 +1765,20 @@ section {
       const diffX = currentX - startX;
       const diffY = currentY - startY;
 
-      if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
+      if (!dragged && (Math.abs(diffX) > 5 || Math.abs(diffY) > 5)) {
         dragged = true;
         hideTooltip();
+        // First real drag motion: swap to left/top anchoring now.
+        chatContainer.style.right = 'auto';
+        chatContainer.style.bottom = 'auto';
+        chatContainer.style.left = initialLeft + 'px';
+        chatContainer.style.top = initialTop + 'px';
       }
 
-      chatContainer.style.left = (initialLeft + diffX) + 'px';
-      chatContainer.style.top = (initialTop + diffY) + 'px';
+      if (dragged) {
+        chatContainer.style.left = (initialLeft + diffX) + 'px';
+        chatContainer.style.top = (initialTop + diffY) + 'px';
+      }
     }
 
     function dragEnd() {
@@ -1788,16 +1804,16 @@ section {
         return;
       }
       if (isChatOpen()) {
-        chatWindow.style.display = 'none';
+        chatWindow.classList.remove('open');
         showTooltip();
       } else {
-        chatWindow.style.display = 'flex';
+        chatWindow.classList.add('open');
         hideTooltip();
       }
     };
 
     closeChat.onclick = () => {
-      chatWindow.style.display = 'none';
+      chatWindow.classList.remove('open');
       showTooltip();
     };
 
