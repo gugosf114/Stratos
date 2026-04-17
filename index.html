@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Stratos">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -362,10 +362,12 @@ section {
 }
 
 .hero-logo:hover {
+  /* Gold glow intensities bumped ~20% vs rest (0.3→0.36, 0.25→0.30).
+     Same shadow structure, just a touch more radiance on hover. */
   filter: brightness(0.95) saturate(1.3)
-    drop-shadow(0 1px 0 rgba(255,235,180,0.3))
+    drop-shadow(0 1px 0 rgba(255,235,180,0.36))
     drop-shadow(0 4px 6px rgba(0,0,0,0.5))
-    drop-shadow(0 8px 16px rgba(198,162,75,0.25))
+    drop-shadow(0 8px 16px rgba(198,162,75,0.30))
     drop-shadow(0 16px 32px rgba(0,0,0,0.25));
   transform: scale(1.02);
 }
@@ -1484,28 +1486,41 @@ section {
 </head>
 <body>
 
-<!-- ── Stratos Aviation Ops Ticker ──────── -->
+<!-- ── Stratos FIDS (Flight Information Display) Ticker ──────── -->
 <style>
+  /* FIDS color system — authentic amber-on-black departures board */
   #stratos-ticker-banner {
-    /* Fixed at the very top so it stays visible while the user scrolls.
-       The nav sits just below so the two are stacked cleanly. */
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     width: 100%;
     height: 28px;
-    background-color: #f1c40f; /* Premium Aviation Yellow */
-    color: #111;
+    /* Deep matte black with a subtle amber-wash base — not pure #000 so
+       the text glow reads as "monitor light" rather than flat vector. */
+    background-color: #0a0806;
+    background-image:
+      /* ultra-faint horizontal scanlines for CRT/LED authenticity */
+      repeating-linear-gradient(
+        to bottom,
+        rgba(255, 176, 32, 0.03) 0px,
+        rgba(255, 176, 32, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      ),
+      /* slight amber falloff from the top edge */
+      linear-gradient(to bottom,
+        rgba(255, 176, 32, 0.06) 0%,
+        transparent 40%);
+    color: #ffb020;
     display: flex;
     align-items: center;
     overflow: hidden;
-    border-bottom: 1px solid #d4ac0d;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    z-index: 1001; /* Above .nav (900) */
+    border-bottom: 1px solid rgba(255, 176, 32, 0.18);
+    box-shadow:
+      inset 0 0 30px rgba(255, 176, 32, 0.04),
+      0 1px 0 rgba(0, 0, 0, 0.6);
+    z-index: 1001; /* above .nav (900) */
+    font-size: 11px;
+    letter-spacing: 0.04em;
   }
 
   #stratos-ticker-banner .ticker-wrap {
@@ -1513,16 +1528,19 @@ section {
     overflow: hidden;
     white-space: nowrap;
     box-sizing: border-box;
+    /* mask the edges so text fades in/out instead of hard-clipping */
+    -webkit-mask-image: linear-gradient(to right,
+      transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
+    mask-image: linear-gradient(to right,
+      transparent 0, #000 30px, #000 calc(100% - 30px), transparent 100%);
   }
 
   #stratos-ticker-banner .ticker-content {
     display: inline-block;
     white-space: nowrap;
-    /* Classic seamless-marquee trick: render the city list twice end-to-end,
-       animate by exactly -50% (= one full copy's width). When the second
-       copy lands at x=0 the animation resets — visually identical to the
-       first frame, so the loop has zero gap between cycles. */
-    animation: ticker-scroll 60s linear infinite;
+    /* Seamless marquee: 2x duplicated content, translate to -50% so the
+       second copy lands where the first started. No gap, no pause. */
+    animation: fids-scroll 75s linear infinite;
     will-change: transform;
   }
 
@@ -1530,25 +1548,83 @@ section {
     animation-play-state: paused;
   }
 
-  @keyframes ticker-scroll {
+  @keyframes fids-scroll {
     0%   { transform: translate3d(0, 0, 0); }
     100% { transform: translate3d(-50%, 0, 0); }
   }
 
-  #stratos-ticker-banner .clock-item {
+  /* ── One departures-board row entry ─────────────────────── */
+  #stratos-ticker-banner .fids-row {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 0 4px;
+  }
+
+  /* Live status dot — pulses like an LED on the monitor */
+  #stratos-ticker-banner .fids-dot {
     display: inline-block;
-    margin-right: 60px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 4px #4ade80, 0 0 8px rgba(74, 222, 128, 0.5);
+    transform: translateY(-1px);
+    animation: fids-pulse 1.8s infinite ease-in-out;
+  }
+  @keyframes fids-pulse {
+    0%, 100% { opacity: 1;    transform: translateY(-1px) scale(1); }
+    50%      { opacity: 0.5;  transform: translateY(-1px) scale(0.85); }
   }
 
-  #stratos-ticker-banner .clock-city {
-    color: #000;
-    opacity: 0.7;
-    margin-right: 8px;
+  /* City name — Big Shoulders Display, the station-signage / departures
+     board typography. Heavy, tall, condensed, spaced caps. */
+  #stratos-ticker-banner .fids-city {
+    font-family: 'Big Shoulders Display', 'Impact', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
+    color: #ffb020;
+    text-shadow:
+      0 0 6px rgba(255, 176, 32, 0.45),
+      0 0 2px rgba(255, 176, 32, 0.8);
   }
 
-  #stratos-ticker-banner .clock-time {
-    color: #111;
+  /* Time — monospace, tabular figures, slightly dimmer than city name
+     so the hierarchy reads: place first, time second */
+  #stratos-ticker-banner .fids-time {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    font-size: 11px;
+    color: #ffc84a;
+    text-shadow: 0 0 4px rgba(255, 200, 74, 0.35);
+  }
+
+  /* IATA code — even dimmer, smaller, the "metadata" slot */
+  #stratos-ticker-banner .fids-code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(255, 176, 32, 0.55);
+  }
+
+  /* Narrow middle-dot separators between fields within a row */
+  #stratos-ticker-banner .fids-sep {
+    color: rgba(255, 176, 32, 0.32);
+    font-size: 10px;
+  }
+
+  /* Tall vertical rule between rows — the board's column divider */
+  #stratos-ticker-banner .fids-rule {
+    display: inline-block;
+    width: 1px;
+    height: 14px;
+    background: rgba(255, 176, 32, 0.22);
+    margin: 0 22px;
+    transform: translateY(2px);
   }
 </style>
 
@@ -1560,21 +1636,21 @@ section {
 
 <script>
   (function() {
+    // Real-airport-to-real-city mapping. Dashboard-grade data, not just codes.
     const HUBS = [
-      { name: 'VNY (PST)', zone: 'America/Los_Angeles' }, // Van Nuys — Stratos home turf
-      { name: 'LAX (PST)', zone: 'America/Los_Angeles' },
-      { name: 'JFK (EST)', zone: 'America/New_York' },
-      { name: 'MIA (EST)', zone: 'America/New_York' },
-      { name: 'LHR (GMT)', zone: 'Europe/London' },
-      { name: 'CDG (CET)', zone: 'Europe/Paris' },
-      { name: 'DXB (GST)', zone: 'Asia/Dubai' },
-      { name: 'SIN (SGT)', zone: 'Asia/Singapore' },
-      { name: 'HND (JST)', zone: 'Asia/Tokyo' },
-      { name: 'SYD (AEDT)', zone: 'Australia/Sydney' }
+      { city: 'Van Nuys',     code: 'VNY', zone: 'America/Los_Angeles' }, // Stratos home turf
+      { city: 'Los Angeles',  code: 'LAX', zone: 'America/Los_Angeles' },
+      { city: 'New York',     code: 'JFK', zone: 'America/New_York'    },
+      { city: 'Miami',        code: 'MIA', zone: 'America/New_York'    },
+      { city: 'London',       code: 'LHR', zone: 'Europe/London'       },
+      { city: 'Paris',        code: 'CDG', zone: 'Europe/Paris'        },
+      { city: 'Dubai',        code: 'DXB', zone: 'Asia/Dubai'          },
+      { city: 'Singapore',    code: 'SIN', zone: 'Asia/Singapore'      },
+      { city: 'Tokyo',        code: 'HND', zone: 'Asia/Tokyo'          },
+      { city: 'Sydney',       code: 'SYD', zone: 'Australia/Sydney'    }
     ];
 
-    // Cache formatters once so we're not creating 10 Intl.DateTimeFormat
-    // instances every second.
+    // Cache formatters once so we're not spinning up 10 Intl instances per second
     const FORMATTERS = HUBS.map(h => new Intl.DateTimeFormat('en-US', {
       hour: '2-digit', minute: '2-digit', second: '2-digit',
       hour12: false, timeZone: h.zone
@@ -1582,26 +1658,36 @@ section {
 
     const target = document.getElementById('stratos-live-clocks');
 
-    function renderClocks() {
+    function renderRow(i, timeString) {
+      const h = HUBS[i];
+      return '<span class="fids-row">' +
+               '<span class="fids-dot" aria-hidden="true"></span>' +
+               '<span class="fids-city">' + h.city + '</span>' +
+               '<span class="fids-sep">·</span>' +
+               '<span class="fids-time">' + timeString + '</span>' +
+               '<span class="fids-sep">·</span>' +
+               '<span class="fids-code">' + h.code + '</span>' +
+             '</span>' +
+             '<span class="fids-rule" aria-hidden="true"></span>';
+    }
+
+    function renderBoard() {
       const now = new Date();
       let html = '';
-      // Duplicate the set so the scroll loop has no visible gap.
+      // 2x duplicate for seamless loop
       for (let pass = 0; pass < 2; pass++) {
         for (let i = 0; i < HUBS.length; i++) {
-          const t = FORMATTERS[i].format(now);
-          html += '<span class="clock-item">' +
-                  '<span class="clock-city">' + HUBS[i].name + '</span>' +
-                  '<span class="clock-time">' + t + '</span></span>';
+          html += renderRow(i, FORMATTERS[i].format(now));
         }
       }
       target.innerHTML = html;
     }
 
-    renderClocks();
-    setInterval(renderClocks, 1000);
+    renderBoard();
+    setInterval(renderBoard, 1000);
   })();
 </script>
-<!-- ── End Stratos Aviation Ops Ticker ──────── -->
+<!-- ── End Stratos FIDS Ticker ──────── -->
 
 
 <!-- ── Stratos Concierge Chat Widget ──────── -->
