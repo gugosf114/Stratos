@@ -1600,6 +1600,30 @@ section {
     font-size: 11px;
     color: #ffc84a;
     text-shadow: 0 0 4px rgba(255, 200, 74, 0.35);
+    /* Each digit lives in its own 3D container so the split-flap rotation
+       is crisp and doesn't blur the non-flipping siblings. */
+    perspective: 140px;
+  }
+
+  /* Individual character cell — the split-flap tile */
+  #stratos-ticker-banner .fids-char {
+    display: inline-block;
+    min-width: 0.58em;
+    text-align: center;
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+  #stratos-ticker-banner .fids-char.flipping {
+    animation: fids-flip 420ms cubic-bezier(.55, .05, .35, 1);
+  }
+  /* Two-phase flip: down to 90° (invisible edge-on), JS swaps the glyph,
+     then rotates up from -90° back to 0°. Reads exactly like a Solari tile. */
+  @keyframes fids-flip {
+    0%   { transform: rotateX(0deg); }
+    48%  { transform: rotateX(-90deg); }
+    52%  { transform: rotateX(90deg); }
+    100% { transform: rotateX(0deg); }
   }
 
   /* IATA code — even dimmer, smaller, the "metadata" slot */
@@ -1658,33 +1682,72 @@ section {
 
     const target = document.getElementById('stratos-live-clocks');
 
-    function renderRow(i, timeString) {
-      const h = HUBS[i];
-      return '<span class="fids-row">' +
-               '<span class="fids-dot" aria-hidden="true"></span>' +
-               '<span class="fids-city">' + h.city + '</span>' +
-               '<span class="fids-sep">·</span>' +
-               '<span class="fids-time">' + timeString + '</span>' +
-               '<span class="fids-sep">·</span>' +
-               '<span class="fids-code">' + h.code + '</span>' +
-             '</span>' +
-             '<span class="fids-rule" aria-hidden="true"></span>';
-    }
-
-    function renderBoard() {
+    // Build the DOM ONCE and then update character-by-character. Blowing
+    // away innerHTML every second would also blow away any in-flight
+    // flip animations — not what we want.
+    function buildBoardOnce() {
       const now = new Date();
       let html = '';
-      // 2x duplicate for seamless loop
       for (let pass = 0; pass < 2; pass++) {
         for (let i = 0; i < HUBS.length; i++) {
-          html += renderRow(i, FORMATTERS[i].format(now));
+          const h = HUBS[i];
+          const t = FORMATTERS[i].format(now);
+          // Wrap each character in its own span so we can flip individually.
+          let timeHtml = '';
+          for (let k = 0; k < t.length; k++) {
+            timeHtml += '<span class="fids-char">' + t[k] + '</span>';
+          }
+          html += '<span class="fids-row" data-pass="' + pass + '" data-hub="' + i + '">' +
+                   '<span class="fids-dot" aria-hidden="true"></span>' +
+                   '<span class="fids-city">' + h.city + '</span>' +
+                   '<span class="fids-sep">·</span>' +
+                   '<span class="fids-time">' + timeHtml + '</span>' +
+                   '<span class="fids-sep">·</span>' +
+                   '<span class="fids-code">' + h.code + '</span>' +
+                 '</span>' +
+                 '<span class="fids-rule" aria-hidden="true"></span>';
         }
       }
       target.innerHTML = html;
     }
 
-    renderBoard();
-    setInterval(renderBoard, 1000);
+    // Flip a single character tile: rotate down to edge-on, swap glyph
+    // at the halfway point (invisible), rotate up from the opposite side.
+    // Classic Solari mechanism.
+    function flipChar(el, newChar) {
+      if (el.classList.contains('flipping')) {
+        // Already mid-flip — just update text at next tick, don't stack.
+        el.textContent = newChar;
+        return;
+      }
+      el.classList.add('flipping');
+      // Swap at ~50% of the 420ms animation, when the tile is edge-on.
+      setTimeout(function() { el.textContent = newChar; }, 210);
+      setTimeout(function() { el.classList.remove('flipping'); }, 440);
+    }
+
+    function tick() {
+      const now = new Date();
+      for (let i = 0; i < HUBS.length; i++) {
+        const newTime = FORMATTERS[i].format(now);
+        // Both marquee copies carry identical time data — update both.
+        for (let pass = 0; pass < 2; pass++) {
+          const row = target.querySelector(
+            '[data-pass="' + pass + '"][data-hub="' + i + '"]'
+          );
+          if (!row) continue;
+          const chars = row.querySelectorAll('.fids-char');
+          for (let k = 0; k < newTime.length && k < chars.length; k++) {
+            if (chars[k].textContent !== newTime[k]) {
+              flipChar(chars[k], newTime[k]);
+            }
+          }
+        }
+      }
+    }
+
+    buildBoardOnce();
+    setInterval(tick, 1000);
   })();
 </script>
 <!-- ── End Stratos FIDS Ticker ──────── -->
