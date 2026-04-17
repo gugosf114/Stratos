@@ -1725,7 +1725,7 @@ section {
       appendMessage("...", 'bot', loadingId);
 
       try {
-        const response = await fetch('/api/chat', {
+        const response = await fetch('https://us-central1-bakers-agent.cloudfunctions.net/stratos-chat-v1', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: text })

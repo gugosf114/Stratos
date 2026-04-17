@@ -1,0 +1,12 @@
+{
+  "name": "stratos-chat-function",
+  "version": "1.0.0",
+  "description": "Stratos Aviation Detailing chat concierge backend (Claude Sonnet 4.6)",
+  "main": "index.js",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.4.0"
+  }
+}
