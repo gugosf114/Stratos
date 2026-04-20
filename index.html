@@ -440,7 +440,7 @@ section {
 .hero-cta {
   display: inline-block;
   padding: 18px 56px;
-  border: 3px solid rgba(198, 162, 75, 0.6);
+  border: 2px solid var(--gold);
   color: var(--gold);
   text-decoration: none;
   font-size: 11px;
@@ -449,27 +449,28 @@ section {
   text-transform: uppercase;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
-  overflow: visible;
+  overflow: hidden;
   opacity: 0;
   animation: fadeUp 1s 1.5s ease-out forwards,
-             ctaBorderPulse 4s 3s ease-in-out infinite;
-  box-shadow: 0 0 20px rgba(198, 162, 75, 0.1);
+             ctaPulse 2.5s 3s ease-in-out infinite;
 }
 
-@keyframes ctaBorderPulse {
-  0%   { box-shadow: -100px 0 35px -5px rgba(198,162,75,0.7),  0 0 20px rgba(198,162,75,0.15); border-color: rgba(198,162,75,0.5); }
-  12%  { box-shadow: 0 -22px 35px -5px rgba(255,225,150,0.8),  0 0 30px rgba(198,162,75,0.25); border-color: rgba(255,225,150,0.9); }
-  25%  { box-shadow: 100px 0 35px -5px rgba(198,162,75,0.7),   0 0 20px rgba(198,162,75,0.15); border-color: rgba(198,162,75,0.5); }
-  37%  { box-shadow: 0 22px 35px -5px rgba(255,225,150,0.8),   0 0 30px rgba(198,162,75,0.25); border-color: rgba(255,225,150,0.9); }
-  50%  { box-shadow: -100px 0 35px -5px rgba(198,162,75,0.7),  0 0 20px rgba(198,162,75,0.15); border-color: rgba(198,162,75,0.5); }
-  100% { box-shadow: -100px 0 35px -5px rgba(198,162,75,0.7),  0 0 20px rgba(198,162,75,0.15); border-color: rgba(198,162,75,0.5); }
+@keyframes ctaPulse {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(198,162,75,0.15), 0 0 40px rgba(198,162,75,0.05);
+    border-color: rgba(198,162,75,0.7);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(198,162,75,0.5), 0 0 60px rgba(198,162,75,0.2), 0 0 100px rgba(198,162,75,0.08);
+    border-color: rgba(255,225,150,1);
+  }
 }
 
 .hero-cta:hover {
   animation: none;
-  border-color: var(--gold);
   background: var(--gold);
   color: var(--black);
+  border-color: var(--gold);
   box-shadow: 0 0 40px rgba(198, 162, 75, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
 }
@@ -2383,21 +2384,21 @@ section {
 <!-- ═══════════ STATS ═══════════ -->
 <div class="stats-bar">
   <div class="stats-grid">
-    <div class="stat-item" data-target="500" data-suffix="+">
-      <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">+</span></div>
-      <div class="stat-label">Aircraft Serviced</div>
-    </div>
     <div class="stat-item" data-target="15" data-suffix="+">
       <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">+</span></div>
       <div class="stat-label">LA Airports</div>
     </div>
     <div class="stat-item" data-target="24" data-suffix="/7">
       <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">/7</span></div>
-      <div class="stat-label">Mobile Service</div>
+      <div class="stat-label">On-Call Service</div>
     </div>
     <div class="stat-item" data-target="100" data-suffix="%">
       <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">%</span></div>
       <div class="stat-label">FAA Compliant</div>
+    </div>
+    <div class="stat-item" data-target="5" data-suffix="★">
+      <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">★</span></div>
+      <div class="stat-label">Client Rating</div>
     </div>
   </div>
 </div>
@@ -2855,7 +2856,6 @@ if ('serviceWorker' in navigator) {
 (() => {
   const items = document.querySelectorAll('.stat-item');
   if (!items.length) return;
-  let fired = false;
   const countUp = (el, target, duration) => {
     const display = el.querySelector('.stat-count');
     const start = performance.now();
@@ -2868,18 +2868,22 @@ if ('serviceWorker' in navigator) {
     };
     requestAnimationFrame(step);
   };
+  const reset = () => {
+    items.forEach(item => {
+      item.classList.remove('visible');
+      item.querySelector('.stat-count').textContent = '0';
+    });
+  };
   const observer = new IntersectionObserver((entries) => {
-    if (fired) return;
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        fired = true;
+        reset();
         items.forEach((item, i) => {
           setTimeout(() => {
             item.classList.add('visible');
-            countUp(item, parseInt(item.dataset.target), 2000);
+            countUp(item, parseInt(item.dataset.target), 1800);
           }, i * 200);
         });
-        observer.disconnect();
       }
     });
   }, { threshold: 0.3 });
