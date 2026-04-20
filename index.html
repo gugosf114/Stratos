@@ -440,7 +440,7 @@ section {
 .hero-cta {
   display: inline-block;
   padding: 18px 56px;
-  border: 1px solid var(--gold);
+  border: 2px solid rgba(198, 162, 75, 0.6);
   color: var(--gold);
   text-decoration: none;
   font-size: 11px;
@@ -449,13 +449,25 @@ section {
   text-transform: uppercase;
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   opacity: 0;
-  animation: fadeUp 1s 1.5s ease-out forwards;
+  animation: fadeUp 1s 1.5s ease-out forwards,
+             ctaBorderPulse 4s 3s ease-in-out infinite;
   box-shadow: 0 0 20px rgba(198, 162, 75, 0.1);
 }
 
+@keyframes ctaBorderPulse {
+  0%   { box-shadow: -80px 0 20px -10px rgba(198,162,75,0.5),  0 0 12px rgba(198,162,75,0.08); border-color: rgba(198,162,75,0.4); }
+  12%  { box-shadow: 0 -18px 20px -10px rgba(198,162,75,0.6),  0 0 18px rgba(198,162,75,0.12); border-color: rgba(198,162,75,0.7); }
+  25%  { box-shadow: 80px 0 20px -10px rgba(198,162,75,0.5),   0 0 12px rgba(198,162,75,0.08); border-color: rgba(198,162,75,0.4); }
+  37%  { box-shadow: 0 18px 20px -10px rgba(198,162,75,0.6),   0 0 18px rgba(198,162,75,0.12); border-color: rgba(198,162,75,0.7); }
+  50%  { box-shadow: -80px 0 20px -10px rgba(198,162,75,0.5),  0 0 12px rgba(198,162,75,0.08); border-color: rgba(198,162,75,0.4); }
+  100% { box-shadow: -80px 0 20px -10px rgba(198,162,75,0.5),  0 0 12px rgba(198,162,75,0.08); border-color: rgba(198,162,75,0.4); }
+}
+
 .hero-cta:hover {
+  animation: none;
+  border-color: var(--gold);
   background: var(--gold);
   color: var(--black);
   box-shadow: 0 0 40px rgba(198, 162, 75, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -505,6 +517,69 @@ section {
 
 .about-image:hover img {
   filter: brightness(1) saturate(1);
+}
+
+/* ═══════════════════════════════════════════
+   STATS COUNTER — Animated numbers
+   ═══════════════════════════════════════════ */
+.stats-bar {
+  background: linear-gradient(180deg, rgba(15,15,15,1) 0%, rgba(8,8,8,1) 100%);
+  padding: 80px 40px;
+  border-top: 1px solid rgba(198,162,75,0.1);
+  border-bottom: 1px solid rgba(198,162,75,0.1);
+}
+.stats-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  text-align: center;
+}
+.stat-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.stat-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.stat-number {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 300;
+  color: var(--gold);
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(198,162,75,0.2);
+}
+.stat-number .stat-suffix {
+  font-size: 0.6em;
+  opacity: 0.7;
+}
+.stat-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  margin-top: 12px;
+}
+.stat-item::after {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 1px;
+  background: rgba(198,162,75,0.3);
+  margin: 16px auto 0;
+}
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 48px 24px; }
+}
+@media (max-width: 480px) {
+  .stats-bar { padding: 60px 20px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 40px 16px; }
 }
 
 /* ═══════════════════════════════════════════
@@ -2305,6 +2380,28 @@ section {
   </div>
 </section>
 
+<!-- ═══════════ STATS ═══════════ -->
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div class="stat-item" data-target="500" data-suffix="+">
+      <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">+</span></div>
+      <div class="stat-label">Aircraft Serviced</div>
+    </div>
+    <div class="stat-item" data-target="15" data-suffix="+">
+      <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">+</span></div>
+      <div class="stat-label">LA Airports</div>
+    </div>
+    <div class="stat-item" data-target="24" data-suffix="/7">
+      <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">/7</span></div>
+      <div class="stat-label">Mobile Service</div>
+    </div>
+    <div class="stat-item" data-target="100" data-suffix="%">
+      <div class="stat-number"><span class="stat-count">0</span><span class="stat-suffix">%</span></div>
+      <div class="stat-label">FAA Compliant</div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ LOCATIONS ═══════════ -->
 <section class="locations" id="locations">
   <div class="locations-bg"></div>
@@ -2753,6 +2850,41 @@ window.addEventListener('appinstalled', () => {
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js');
 }
+
+// ── Stats Counter Animation
+(() => {
+  const items = document.querySelectorAll('.stat-item');
+  if (!items.length) return;
+  let fired = false;
+  const countUp = (el, target, duration) => {
+    const display = el.querySelector('.stat-count');
+    const start = performance.now();
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      display.textContent = Math.floor(eased * target);
+      if (progress < 1) requestAnimationFrame(step);
+      else display.textContent = target;
+    };
+    requestAnimationFrame(step);
+  };
+  const observer = new IntersectionObserver((entries) => {
+    if (fired) return;
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        fired = true;
+        items.forEach((item, i) => {
+          setTimeout(() => {
+            item.classList.add('visible');
+            countUp(item, parseInt(item.dataset.target), 2000);
+          }, i * 200);
+        });
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  observer.observe(document.querySelector('.stats-bar'));
+})();
 </script>
 
 </body>
