@@ -103,8 +103,8 @@ function formatCallReport(message) {
 }
 
 async function handleVapiReport(req, res, message) {
-  const expectedSecret = process.env.VAPI_WEBHOOK_SECRET;
-  const suppliedSecret = String(req.query?.token || '');
+  const expectedSecret = String(process.env.VAPI_WEBHOOK_SECRET || '').trim();
+  const suppliedSecret = String(req.query?.token || '').trim();
 
   if (!expectedSecret || suppliedSecret !== expectedSecret) {
     console.warn('Rejected Vapi webhook with invalid token');
