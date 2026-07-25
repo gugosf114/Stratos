@@ -122,12 +122,22 @@ async function handleVapiReport(req, res, message) {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      Origin: 'https://stratosjetdetail.com',
+      Referer: 'https://stratosjetdetail.com/',
     },
     body: JSON.stringify(formatCallReport(message)),
   });
 
   const emailResult = await emailResponse.text();
-  if (!emailResponse.ok) {
+  let emailAccepted = false;
+  try {
+    const parsedResult = JSON.parse(emailResult);
+    emailAccepted = parsedResult.success === true || parsedResult.success === 'true';
+  } catch {
+    emailAccepted = false;
+  }
+
+  if (!emailResponse.ok || !emailAccepted) {
     console.error('Call report email failed:', emailResponse.status, emailResult);
     res.status(502).json({ error: 'Email delivery failed' });
     return;
