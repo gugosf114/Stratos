@@ -45,6 +45,9 @@ const MODEL = 'claude-sonnet-4-6';
 const MAX_USER_MESSAGE_LENGTH = 500;
 const MAX_TOKENS = 400;
 const FALLBACK_REPLY = 'Sorry, I am having trouble connecting right now. Please call us at 424-288-8882.';
+const CALL_REPORT_EMAIL = 'edgar@stratosjetdetail.com';
+const FORM_SUBMIT_URL = `https://formsubmit.co/ajax/${CALL_REPORT_EMAIL}`;
+const MAX_TRANSCRIPT_LENGTH = 30000;
 
 function setCors(res, req) {
   // Permissive for launch; tighten to https://stratosjetdetail.com once verified.
@@ -53,6 +56,85 @@ function setCors(res, req) {
   res.set('Access-Control-Allow-Headers', 'Content-Type');
   res.set('Access-Control-Max-Age', '86400');
   res.set('Vary', 'Origin');
+}
+
+function firstValue(...values) {
+  return values.find((value) => value !== undefined && value !== null && value !== '');
+}
+
+function formatCallReport(message) {
+  const call = message.call || {};
+  const artifact = message.artifact || call.artifact || {};
+  const analysis = message.analysis || call.analysis || {};
+  const recording = artifact.recording || {};
+  const caller = firstValue(call.customer?.number, call.customer?.phoneNumber, 'Unknown');
+  const called = firstValue(call.phoneNumber?.number, call.phoneNumber?.phoneNumber, 'Stratos');
+  const startedAt = firstValue(message.startedAt, call.startedAt);
+  const endedAt = firstValue(message.endedAt, call.endedAt);
+  const durationSeconds =
+    startedAt && endedAt
+      ? Math.max(0, Math.round((new Date(endedAt) - new Date(startedAt)) / 1000))
+      : firstValue(call.durationSeconds, 'Unknown');
+  const transcript = String(
+    firstValue(artifact.transcript, message.transcript, call.transcript, 'No transcript was produced.')
+  ).slice(0, MAX_TRANSCRIPT_LENGTH);
+
+  return {
+    _subject: `Stratos call from ${caller}`,
+    _template: 'table',
+    _captcha: 'false',
+    caller,
+    called_number: called,
+    ended_reason: firstValue(message.endedReason, call.endedReason, 'Unknown'),
+    started_at: firstValue(startedAt, 'Unknown'),
+    ended_at: firstValue(endedAt, 'Unknown'),
+    duration_seconds: durationSeconds,
+    summary: firstValue(analysis.summary, analysis.successEvaluation, 'No summary was produced.'),
+    transcript,
+    recording: firstValue(
+      recording.url,
+      artifact.recordingUrl,
+      message.recordingUrl,
+      call.recordingUrl,
+      'No recording URL was produced.'
+    ),
+    call_id: firstValue(call.id, message.callId, 'Unknown'),
+  };
+}
+
+async function handleVapiReport(req, res, message) {
+  const expectedSecret = process.env.VAPI_WEBHOOK_SECRET;
+  const suppliedSecret = String(req.query?.token || '');
+
+  if (!expectedSecret || suppliedSecret !== expectedSecret) {
+    console.warn('Rejected Vapi webhook with invalid token');
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  if (message.type !== 'end-of-call-report') {
+    res.status(200).json({ received: true });
+    return;
+  }
+
+  const emailResponse = await fetch(FORM_SUBMIT_URL, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formatCallReport(message)),
+  });
+
+  const emailResult = await emailResponse.text();
+  if (!emailResponse.ok) {
+    console.error('Call report email failed:', emailResponse.status, emailResult);
+    res.status(502).json({ error: 'Email delivery failed' });
+    return;
+  }
+
+  console.log('Call report email accepted:', message.call?.id || 'unknown call');
+  res.status(200).json({ received: true });
 }
 
 functions.http('stratosChat', async (req, res) => {
@@ -69,6 +151,18 @@ functions.http('stratosChat', async (req, res) => {
   }
 
   const body = req.body && typeof req.body === 'object' ? req.body : {};
+  const vapiMessage = body.message && typeof body.message === 'object' ? body.message : null;
+
+  if (vapiMessage?.type) {
+    try {
+      await handleVapiReport(req, res, vapiMessage);
+    } catch (err) {
+      console.error('Vapi webhook error:', err);
+      res.status(500).json({ error: 'Call report processing failed' });
+    }
+    return;
+  }
+
   const userMessage = String(body.message ?? '').trim();
 
   if (!userMessage) {
