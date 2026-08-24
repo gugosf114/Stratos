@@ -1,7 +1,7 @@
 // Stratos Ops service worker — scope /ops/
 // Strategy: network-first for the app shell (always fresh when online, works offline),
 // cache-first for brand images, passthrough for everything else (Firebase, fonts).
-const VERSION = 'stratos-ops-v1.1.0';
+const VERSION = 'stratos-ops-v1.1.1';
 const SHELL = [
   '/ops/',
   '/ops/index.html',
@@ -59,7 +59,7 @@ self.addEventListener('fetch', e => {
 
   if (url.pathname.startsWith('/ops/')) {
     e.respondWith(
-      fetch(req).then(res => {
+      fetch(req, { cache: 'no-store' }).then(res => {
         if (res && res.ok) {
           const copy = res.clone();
           caches.open(VERSION).then(c => c.put(req, copy));
