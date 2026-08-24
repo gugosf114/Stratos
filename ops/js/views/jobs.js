@@ -114,7 +114,7 @@ export function dashboard(params) {
     <div>
       <div class="card">
         <div class="card-title"><span class="kicker">Inventory</span><a class="small gold" href="#/inventory">All →</a></div>
-        ${state.inventory.slice(0, 5).map(i => `
+        ${state.inventory.slice().sort((a, b) => (Number(a.qty) <= Number(a.minQty || 0) ? 0 : 1) - (Number(b.qty) <= Number(b.minQty || 0) ? 0 : 1)).slice(0, 5).map(i => `
           <div class="inv-row">
             <span>${esc(i.name)}</span>
             <span class="inv-qty">${Number(i.qty) <= Number(i.minQty || 0) ? '<span class="lowstock">Low stock</span> ' : ''}${esc(String(i.qty))} ${esc(i.unit || '')}</span>

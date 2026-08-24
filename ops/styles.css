@@ -212,7 +212,7 @@ body.modal-open { overflow: hidden; }
 @media (min-width: 961px) { .stat-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
 .stat { display: flex; gap: 12px; align-items: center; padding: 14px 16px; cursor: pointer; }
 .stat .ic { width: 26px; height: 26px; color: var(--gold); }
-.stat .n { font-family: var(--font-display); font-size: 32px; font-weight: 600; line-height: 1; }
+.stat .n { font-family: var(--font-body); font-size: 28px; font-weight: 700; line-height: 1; font-variant-numeric: lining-nums tabular-nums; }
 .stat .l { font-size: 10.5px; letter-spacing: .18em; text-transform: uppercase; color: var(--white-dim); font-weight: 600; }
 .stat.warn .n { color: var(--gold-light); }
 
@@ -424,4 +424,10 @@ body.modal-open { overflow: hidden; }
   .rep-note, .rep-foot, .muted, .faint { color: #444; }
   .rep-pair figure, .rep-panel { break-inside: avoid; }
   .card { background: #fff; border-color: #ddd; }
+}
+
+/* Desktop: table wins, cards hide. Late override — .job-cards is defined after the earlier media block. */
+@media (min-width: 961px) {
+  .jobs-table { display: table; }
+  .job-cards { display: none; }
 }
