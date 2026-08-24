@@ -504,7 +504,7 @@ export function reportHtml(d) {
       <div class="small muted" style="margin-bottom:12px">Areas documented before service. Marked photos below are part of the permanent job record.</div>
       <div class="rep-damage">${damaged.map(p => `
         <div class="rep-dmg-item">
-          <figure class="rep-fig"><img src="${esc(p.url)}" alt="">${marksToSVG(p.annotation)}</figure>
+          <figure class="rep-fig"><img src="${esc(p.url)}" alt=""><span class="anno-layer">${marksToSVG(p.annotation)}</span></figure>
           <div>
             <div class="small gold">${esc(p.stepId ? stepById(p.stepId).name : (p.phase === 'after' ? 'After service' : 'On arrival'))}</div>
             ${p.annotation.note ? `<div class="rep-note" style="margin-top:4px">${esc(p.annotation.note)}</div>` : '<div class="rep-note faint" style="margin-top:4px">Marked — see photo.</div>'}
