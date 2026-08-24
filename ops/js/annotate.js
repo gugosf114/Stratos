@@ -19,8 +19,10 @@ export function marksInner(annotation) {
     if (m.t === 'c') {
       return `<ellipse cx="${m.cx}" cy="${m.cy}" rx="${Math.max(0.003, m.rx)}" ry="${Math.max(0.003, m.ry)}" fill="none" stroke="${stroke}" stroke-width="${w}" vector-effect="non-scaling-stroke"/>`;
     }
-    if (m.t === 'p' && m.pts && m.pts.length) {
-      const d = 'M' + m.pts.map(p => `${p[0]} ${p[1]}`).join(' L ');
+    if (m.t === 'p' && m.pts && m.pts.length >= 2) {
+      // pts is a FLAT array [x0,y0,x1,y1,...] — Firestore forbids nested arrays.
+      let d = `M${m.pts[0]} ${m.pts[1]}`;
+      for (let i = 2; i < m.pts.length; i += 2) d += ` L${m.pts[i]} ${m.pts[i + 1]}`;
       return `<path d="${d}" fill="none" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
     }
     return '';
@@ -88,7 +90,7 @@ export function openAnnotator(opts) {
     try { svg.setPointerCapture(e.pointerId); } catch (x) {}
     const [x, y] = clampPt(e);
     cur = tool === 'pen'
-      ? { t: 'p', c: color, w: 3, pts: [[x, y]] }
+      ? { t: 'p', c: color, w: 3, pts: [x, y] }
       : { t: 'c', c: color, w: 3, _x0: x, _y0: y, cx: x, cy: y, rx: 0, ry: 0 };
     paint(commit(cur));
   };
@@ -97,8 +99,8 @@ export function openAnnotator(opts) {
     e.preventDefault();
     const [x, y] = clampPt(e);
     if (cur.t === 'p') {
-      const last = cur.pts[cur.pts.length - 1];
-      if (Math.abs(x - last[0]) + Math.abs(y - last[1]) > 0.004 && cur.pts.length < 500) cur.pts.push([x, y]);
+      const lx = cur.pts[cur.pts.length - 2], ly = cur.pts[cur.pts.length - 1];
+      if (Math.abs(x - lx) + Math.abs(y - ly) > 0.004 && cur.pts.length < 1000) cur.pts.push(x, y);
     } else {
       cur.cx = n4((cur._x0 + x) / 2); cur.cy = n4((cur._y0 + y) / 2);
       cur.rx = n4(Math.abs(x - cur._x0) / 2); cur.ry = n4(Math.abs(y - cur._y0) / 2);
@@ -108,7 +110,7 @@ export function openAnnotator(opts) {
   const up = () => {
     if (!cur) return;
     const m = commit(cur);
-    const big = m.t === 'p' ? m.pts.length > 1 : (m.rx > 0.01 || m.ry > 0.01);
+    const big = m.t === 'p' ? m.pts.length >= 4 : (m.rx > 0.01 || m.ry > 0.01);
     if (big) marks.push(m);
     cur = null;
     paint();
