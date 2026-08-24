@@ -2,6 +2,16 @@
 export const VERSION = '1.0.0';
 export const APP_URL = 'https://stratosjetdetail.com/ops/';
 
+// Sign-in is username + password only (no email shown). Usernames map to internal
+// accounts <username>@stratos.local. To add a person: create the account + member
+// doc, then add them here. `hue` tips the avatar color.
+export const LOGIN_DOMAIN = 'stratos.local';
+export const USERS = [
+  { username: 'edgar', label: 'Edgar' },
+  { username: 'david', label: 'David' }
+];
+export const emailForUser = u => `${String(u).trim().toLowerCase()}@${LOGIN_DOMAIN}`;
+
 export const AIRPORTS = [
   { code: 'VNY', icao: 'KVNY', name: 'Van Nuys', fbos: ['Signature Aviation', 'Clay Lacy Aviation', 'Castle & Cooke Aviation'] },
   { code: 'BUR', icao: 'KBUR', name: 'Hollywood Burbank', fbos: ['Atlantic Aviation'] },

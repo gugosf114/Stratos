@@ -478,3 +478,12 @@ body.modal-open { overflow: hidden; }
 .rep-dmg-item .rep-fig img { width: 100%; display: block; }
 @media (max-width: 600px) { .rep-dmg-item { grid-template-columns: 120px 1fr; gap: 12px; } }
 @media print { .rep-dmg-item { break-inside: avoid; } .anno-svg ellipse, .anno-svg path { stroke-width: 3 !important; } }
+
+/* ---------- who's-working sign-in ---------- */
+.who-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.who-card { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 22px 12px; background: var(--black-light); border: 1px solid var(--line); border-radius: 14px; color: var(--white); cursor: pointer; transition: .15s; }
+.who-card:hover { border-color: var(--gold-dark); }
+.who-card.on { border-color: var(--gold); background: rgba(198,162,75,.12); box-shadow: 0 0 0 2px rgba(198,162,75,.25); }
+.who-av { width: 56px; height: 56px; border-radius: 50%; background: rgba(198,162,75,.16); color: var(--gold-light); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: 28px; font-weight: 600; }
+.who-card.on .who-av { background: var(--gold); color: #14210F; }
+.who-name { font-size: 16px; font-weight: 600; letter-spacing: .02em; }
