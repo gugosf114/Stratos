@@ -1,12 +1,13 @@
 rules_version = '2';
 
 // Stratos Ops — Storage rules for bucket stratos-ops-photos.
-// Members (Firestore db "stratos", members/{uid}.active) may upload job photos.
+// Membership is stamped as a custom auth claim ("stratos": role) by the
+// stratos-claims Cloud Function; cross-service firestore.exists() cannot read
+// a NAMED Firestore database, so the claim is the gate.
 service firebase.storage {
   match /b/{bucket}/o {
     function isMember() {
-      return request.auth != null
-        && firestore.exists(/databases/stratos/documents/members/$(request.auth.uid));
+      return request.auth != null && request.auth.token.stratos != null;
     }
     match /jobs/{jobId}/{photo} {
       allow read: if isMember();

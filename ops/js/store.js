@@ -51,8 +51,21 @@ export function boot() {
     if (user) await resolveMember(user);
     state.authReady = true;
     emit();
-    if (state.member) { startWatchers(); processQueue(); }
+    if (state.member) { await ensureClaims(user); startWatchers(); processQueue(); }
   });
+}
+
+// Storage rules gate photo uploads on a custom auth claim ("stratos": role),
+// stamped by the stratos-claims Cloud Function. Firebase idToken travels in
+// X-Auth-Token because Cloud Run intercepts foreign Authorization headers.
+const CLAIMS_URL = 'https://stratos-claims-qfv7mm5hva-uc.a.run.app';
+async function ensureClaims(user) {
+  try {
+    const tok = await user.getIdTokenResult();
+    if (tok.claims.stratos === (state.member && state.member.role)) return;
+    const r = await fetch(CLAIMS_URL, { method: 'POST', headers: { 'X-Auth-Token': tok.token } });
+    if (r.ok) await user.getIdToken(true); // refresh so the new claim is live
+  } catch (e) { console.warn('claims', e); }
 }
 
 async function resolveMember(user) {
