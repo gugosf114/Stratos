@@ -1,5 +1,5 @@
 // Stratos Ops — data layer: auth, live Firestore watchers, offline photo queue, all actions.
-import { auth, db, storage, A, F, S } from './firebase.js';
+import { auth, db, storage, firebaseConfig, A, F, S } from './firebase.js';
 import { uid, toast, toDate } from './util.js';
 import { serviceById } from './constants.js';
 
@@ -478,7 +478,27 @@ export async function createShare(jobId) {
   return token;
 }
 
+// Public customer report read — REST, no SDK. Customers are never signed in,
+// and the SDK's first unauthenticated read stalls behind auth/persistence init.
+// Rules allow `get` on shares/{token}; the web API key is public by design.
+function decodeVal(v) {
+  if (v.nullValue !== undefined) return null;
+  if (v.booleanValue !== undefined) return v.booleanValue;
+  if (v.integerValue !== undefined) return Number(v.integerValue);
+  if (v.doubleValue !== undefined) return v.doubleValue;
+  if (v.timestampValue !== undefined) return v.timestampValue;
+  if (v.stringValue !== undefined) return v.stringValue;
+  if (v.mapValue !== undefined) return decodeFields(v.mapValue.fields || {});
+  if (v.arrayValue !== undefined) return (v.arrayValue.values || []).map(decodeVal);
+  return null;
+}
+function decodeFields(f) { const o = {}; for (const k in f) o[k] = decodeVal(f[k]); return o; }
+
 export async function fetchShare(token) {
-  const s = await F.getDoc(F.doc(db, 'shares', token));
-  return s.exists() ? s.data() : null;
+  const url = `https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/stratos/documents/shares/${encodeURIComponent(token)}?key=${firebaseConfig.apiKey}`;
+  const r = await fetch(url);
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error('load failed ' + r.status);
+  const j = await r.json();
+  return j.fields ? decodeFields(j.fields) : null;
 }
