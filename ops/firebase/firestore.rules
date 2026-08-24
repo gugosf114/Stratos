@@ -1,0 +1,99 @@
+rules_version = '2';
+
+// Stratos Ops — Firestore rules for the named database "stratos" in project bakers-agent.
+// Access model: an email must be invited (invites/{email}) before the account can
+// enroll itself as a member (members/{uid}). Roles: owner > manager > crew.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function myEmail() { return request.auth.token.email.lower(); }
+    function memberPath() { return /databases/$(database)/documents/members/$(request.auth.uid); }
+    function isMember() { return signedIn() && exists(memberPath()) && get(memberPath()).data.active == true; }
+    function myRole() { return get(memberPath()).data.role; }
+    function isManager() { return isMember() && myRole() in ['owner', 'manager']; }
+    function isOwner() { return isMember() && myRole() == 'owner'; }
+    function invitePath() { return /databases/$(database)/documents/invites/$(myEmail()); }
+    function isInvited() { return signedIn() && request.auth.token.email != null && exists(invitePath()); }
+
+    // ---- People -----------------------------------------------------------
+    match /members/{uid} {
+      allow read: if isMember() || (signedIn() && request.auth.uid == uid);
+      // Self-enrollment: the signed-in account claims its own invite.
+      allow create: if signedIn()
+        && request.auth.uid == uid
+        && isInvited()
+        && request.resource.data.keys().hasOnly(['email', 'name', 'role', 'active', 'createdAt'])
+        && request.resource.data.email == myEmail()
+        && request.resource.data.role == get(invitePath()).data.role
+        && request.resource.data.active == true;
+      allow update: if isOwner()
+        || (isManager() && resource.data.role != 'owner' && request.resource.data.role != 'owner')
+        || (signedIn() && request.auth.uid == uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']));
+      allow delete: if isOwner() && request.auth.uid != uid;
+    }
+
+    match /invites/{inviteEmail} {
+      allow read: if isManager() || (signedIn() && request.auth.token.email != null && inviteEmail == myEmail());
+      allow create, update: if isManager()
+        && request.resource.data.role in ['owner', 'manager', 'crew']
+        && (request.resource.data.role != 'owner' || isOwner());
+      allow delete: if isManager();
+    }
+
+    // ---- Work -------------------------------------------------------------
+    match /jobs/{jobId} {
+      allow read: if isMember();
+      allow create: if isMember() && request.resource.data.status != 'approved';
+      // Crew may work a job but only a manager can approve QA or edit an approved job.
+      allow update: if isManager()
+        || (isMember()
+            && resource.data.status != 'approved'
+            && request.resource.data.status != 'approved');
+      allow delete: if isManager();
+
+      match /photos/{photoId} {
+        allow read: if isMember();
+        allow create, update: if isMember();
+        allow delete: if isManager() || (isMember() && resource.data.takenBy == request.auth.uid);
+      }
+      match /activity/{entryId} {
+        allow read, create: if isMember();
+        allow update, delete: if isManager();
+      }
+    }
+
+    match /aircraft/{tail} {
+      allow read, create, update: if isMember();
+      allow delete: if isManager();
+    }
+
+    match /inventory/{itemId} {
+      allow read, create, update: if isMember();
+      allow delete: if isManager();
+    }
+
+    match /stockLog/{entryId} {
+      allow read, create: if isMember();
+      allow update, delete: if isManager();
+    }
+
+    // Customer-facing job reports: a random token is the only key. No listing.
+    match /shares/{token} {
+      allow get: if true;
+      allow list: if isMember();
+      allow create: if isMember();
+      allow update, delete: if isManager();
+    }
+
+    match /settings/{doc} {
+      allow read: if isMember();
+      allow write: if isManager();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Stratos Ops — Storage rules for bucket stratos-ops-photos.
+// Members (Firestore db "stratos", members/{uid}.active) may upload job photos.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isMember() {
+      return request.auth != null
+        && firestore.exists(/databases/stratos/documents/members/$(request.auth.uid));
+    }
+    match /jobs/{jobId}/{photo} {
+      allow read: if isMember();
+      allow write: if isMember()
+        && request.resource.size < 12 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
