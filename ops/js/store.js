@@ -359,6 +359,16 @@ export function deletePhoto(jobId, photo) {
   if (photo.path && photo.url) fireAndForget(S.deleteObject(S.ref(storage, photo.path)).catch(e => { if (e.code !== 'storage/object-not-found') throw e; }), 'Delete file');
 }
 
+// Vector marks + a note saved onto a photo. This is the condition/damage record.
+export function annotatePhoto(jobId, photoId, annotation) {
+  const marks = (annotation.marks || []).slice(0, 200);
+  const note = (annotation.note || '').slice(0, 500);
+  const clean = { marks, note, by: me(), byName: myName(), at: F.Timestamp.now() };
+  const marked = marks.length > 0 || !!note;
+  fireAndForget(F.updateDoc(F.doc(db, 'jobs', jobId, 'photos', photoId), { annotation: clean, marked }), 'Mark');
+  if (marked) addActivity(jobId, 'mark', `Marked condition on a photo${note ? ' — ' + note : ''}`);
+}
+
 // ---------------------------------------------------------------------------
 // Inventory
 // ---------------------------------------------------------------------------
@@ -441,7 +451,7 @@ export async function createShare(jobId) {
   if (!job) throw new Error('Job not found');
   const snap = await F.getDocs(F.query(F.collection(db, 'jobs', jobId, 'photos'), F.orderBy('takenAt', 'asc')));
   const photos = snap.docs.map(d => d.data()).filter(p => p.url)
-    .map(p => ({ phase: p.phase, stepId: p.stepId || '', url: p.url, note: p.note || '', takenAt: ms(p.takenAt) }));
+    .map(p => ({ phase: p.phase, stepId: p.stepId || '', url: p.url, note: p.note || '', annotation: p.annotation || null, takenAt: ms(p.takenAt) }));
   const token = uid(24);
   const inspection = {};
   ['before', 'after'].forEach(ph => {

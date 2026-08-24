@@ -4,8 +4,9 @@ import {
   state, watchJob, jobById, isManager, me, myName, memberName,
   startJob, submitForQA, approveQA, requestRework, cancelJob, deleteJob,
   toggleChecklist, setStepData, markPhaseDone, capturePhoto, deletePhoto,
-  useStock, createShare, updateJob
+  useStock, createShare, updateJob, annotatePhoto
 } from '../store.js';
+import { openAnnotator, marksToSVG, hasMarks } from '../annotate.js';
 import {
   esc, icon, toast, fmtDate, fmtDateShort, fmtTime, fmtDateTime, toDate,
   confirmDialog, formDialog, openModal, closeModal, plural
@@ -14,6 +15,7 @@ import { STEPS, stepById, CONDITIONS, statusOf, airportByCode, serviceById, APP_
 
 const photosOf = id => state.photos[id] || [];
 const photoSrc = p => p.url || state.previews[p.id] || '';
+const annoLayer = a => hasMarks(a) ? `<span class="anno-layer">${marksToSVG(a)}</span>` : '';
 const stepPhotos = (id, phase, stepId) => photosOf(id).filter(p => p.phase === phase && p.stepId === stepId);
 const phaseLabel = ph => ph === 'before' ? 'Pre-Service Inspection' : 'After Photos';
 
@@ -86,7 +88,9 @@ export function detail(params) {
     </div>
     <div class="job-meta">
       <span class="m">${icon('calendar')} ${fmtDate(job.scheduledAt)} · ${fmtTime(job.scheduledAt)}</span>
-      <span class="m">${icon('location')} ${esc(ap.name)}${job.fbo ? ' · ' + esc(job.fbo) : ''}</span>
+      ${(() => { const q = encodeURIComponent([ap.icao || ap.name, job.fbo].filter(Boolean).join(' ')); return q
+        ? `<a class="m m-link" href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">${icon('location')} ${esc(ap.name)}${job.fbo ? ' · ' + esc(job.fbo) : ''}</a>`
+        : `<span class="m">${icon('location')} ${esc(ap.name)}</span>`; })()}
       ${job.customer && job.customer.name ? `<span class="m">${icon('user')} ${esc(job.customer.name)}</span>` : ''}
       ${(job.assigned || []).length ? `<span class="m">${icon('team')} ${esc((job.assigned || []).map(memberName).join(', '))}</span>` : ''}
       <span class="m">${icon('photo')} ${plural(job.photoCount || 0, 'photo')}</span>
@@ -163,7 +167,7 @@ function jobTab(job, ph) {
       if (!pics.length && !(info.conditions || []).length && !info.note) return '';
       return `
       <div class="card step-row">
-        <div class="step-thumbs">${pics.slice(0, 3).map(p => `<img src="${esc(photoSrc(p))}" alt="" data-action="open-photo" data-photo="${esc(p.id)}">`).join('')}</div>
+        <div class="step-thumbs">${pics.slice(0, 3).map(p => `<span class="st-thumb" data-action="open-photo" data-photo="${esc(p.id)}"><img src="${esc(photoSrc(p))}" alt="">${hasMarks(p.annotation) ? '<span class="ph-mark sm">✎</span>' : ''}</span>`).join('')}</div>
         <div class="step-info">
           <div class="step-name">${esc(s.name)}</div>
           ${(info.conditions || []).length ? `<div class="step-conds">${esc((info.conditions || []).join(' · '))}</div>` : ''}
@@ -200,6 +204,7 @@ function photoGridHtml(job) {
     <figure class="${p.phase === 'after' ? 'after' : ''}" data-action="open-photo" data-photo="${esc(p.id)}">
       ${photoSrc(p) ? `<img src="${esc(photoSrc(p))}" alt="" loading="lazy">` : ''}
       <span class="ph-tag">${esc(p.phase)}</span>
+      ${hasMarks(p.annotation) ? '<span class="ph-mark" title="Marked">✎</span>' : ''}
       ${p.pending && !p.url ? '<span class="pending-mark" title="Waiting to upload"></span>' : ''}
     </figure>`).join('');
 }
@@ -262,24 +267,36 @@ function openLightbox(job, photoId) {
   const p = photosOf(job.id).find(x => x.id === photoId);
   if (!p || !photoSrc(p)) return;
   const root = document.getElementById('modal-root');
+  const marked = hasMarks(p.annotation);
   root.innerHTML = `
   <div class="lightbox" id="lb">
     <div class="lb-bar">
       <span>${esc(job.tail)} · ${esc(p.phase)}${p.stepId ? ' · ' + esc(stepById(p.stepId).name) : ''}</span>
       <button class="btn btn-icon btn-ghost" id="lb-close">${icon('close')}</button>
     </div>
-    <img src="${esc(photoSrc(p))}" alt="">
+    <div class="lb-stage">
+      <div class="lb-imgwrap"><img src="${esc(photoSrc(p))}" alt="">${annoLayer(p.annotation)}</div>
+    </div>
+    ${marked && p.annotation.note ? `<div class="lb-note">${esc(p.annotation.note)}</div>` : ''}
     <div class="lb-bar">
-      <span class="small faint">${esc(p.takenByName || '')} · ${fmtDateTime(p.takenAt)}${p.url ? '' : ' · waiting to upload'}</span>
-      <button class="btn btn-danger btn-sm" id="lb-del">${icon('trash')} Delete</button>
+      <span class="small faint">${esc(p.takenByName || '')} · ${fmtDateShort(p.takenAt)}${p.url ? '' : ' · waiting'}</span>
+      <span style="display:flex;gap:8px">
+        <button class="btn btn-outline btn-sm" id="lb-mark">${icon('edit')} ${marked ? 'Edit marks' : 'Mark'}</button>
+        <button class="btn btn-danger btn-sm" id="lb-del">${icon('trash')}</button>
+      </span>
     </div>
   </div>`;
-  root.querySelector('#lb-close').onclick = () => { root.innerHTML = ''; };
-  root.querySelector('#lb').onclick = e => { if (e.target.id === 'lb') root.innerHTML = ''; };
+  const close = () => { root.innerHTML = ''; };
+  root.querySelector('#lb-close').onclick = close;
+  root.querySelector('#lb').onclick = e => { if (e.target.id === 'lb' || e.target.classList.contains('lb-stage')) close(); };
+  root.querySelector('#lb-mark').onclick = () => openAnnotator({
+    src: photoSrc(p), w: p.w, h: p.h, annotation: p.annotation, title: 'Mark the condition',
+    onSave: a => { annotatePhoto(job.id, p.id, a); toast('Saved', 'ok'); setTimeout(() => openLightbox(job, photoId), 300); }
+  });
   root.querySelector('#lb-del').onclick = async () => {
     if (await confirmDialog('Delete photo?', 'It disappears from the job and the report.', { ok: 'Delete', danger: true })) {
       deletePhoto(job.id, p);
-      root.innerHTML = '';
+      close();
     }
   };
 }
@@ -324,10 +341,10 @@ export function inspect(params) {
     </div>
     <div class="progressbar"><i style="width:${pct}%"></i></div>
 
-    <div class="viewfinder" id="vf">
+    <div class="viewfinder" id="vf" style="${last && last.w && last.h ? `aspect-ratio:${last.w}/${last.h}` : ''}">
       <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
       ${last && photoSrc(last)
-        ? `<img src="${esc(photoSrc(last))}" alt="">`
+        ? `<img src="${esc(photoSrc(last))}" alt="">${annoLayer(last.annotation)}`
         : `<div class="vf-empty">${icon('camera')}<div>Tap to capture</div></div>`}
     </div>
 
@@ -340,6 +357,8 @@ export function inspect(params) {
       <button class="side-btn" id="skip-step" title="Skip step">${icon('next')}</button>
     </div>
 
+    ${last && photoSrc(last) ? `<button class="btn btn-outline btn-block anno-cta" id="mark-btn">${icon('edit')} ${hasMarks(last.annotation) ? 'Edit marks on this photo' : 'Circle / note damage on this photo'}</button>` : ''}
+
     ${phase === 'before' ? `<div class="cond-row">${CONDITIONS.map(c =>
       `<button class="chip ${conds.includes(c) ? 'on' : ''}" data-cond="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
 
@@ -350,6 +369,7 @@ export function inspect(params) {
     ${pics.length ? `<div class="inspect-thumbs">${pics.map(p => `
       <span class="thumb-wrap">
         <img class="thumb" src="${esc(photoSrc(p))}" alt="">
+        ${hasMarks(p.annotation) ? '<span class="ph-mark sm">✎</span>' : ''}
         <span class="thumb-x" data-del="${esc(p.id)}">✕</span>
       </span>`).join('')}</div>` : ''}
 
@@ -370,6 +390,11 @@ export function inspect(params) {
     root.querySelector('#shutter').onclick = () => cam.click();
     root.querySelector('#vf').onclick = () => cam.click();
     root.querySelector('#pick-gallery').onclick = () => gal.click();
+    const markBtn = root.querySelector('#mark-btn');
+    if (markBtn && last) markBtn.onclick = () => openAnnotator({
+      src: photoSrc(last), w: last.w, h: last.h, annotation: last.annotation, title: 'Mark the condition',
+      onSave: a => { annotatePhoto(job.id, last.id, a); toast('Saved', 'ok'); }
+    });
     root.querySelector('#skip-step').onclick = () => {
       saveNote();
       location.hash = idx < STEPS.length - 1 ? `#/job/${job.id}/inspect/${phase}/${idx + 1}` : `#/job/${job.id}`;
@@ -437,6 +462,7 @@ export function reportHtml(d) {
     const k = p.stepId || '_general';
     (byStep[k] = byStep[k] || { before: [], after: [] })[p.phase === 'after' ? 'after' : 'before'].push(p);
   });
+  const fig = (p, label, after) => `<figure class="rep-fig">${after ? '' : ''}<img src="${esc(p.url)}" alt="">${hasMarks(p.annotation) ? `<span class="anno-layer">${marksToSVG(p.annotation)}</span>` : ''}<figcaption${after ? ' style="background:#C6A24B;color:#14210F"' : ''}>${esc(label)}</figcaption></figure>`;
   const stepSecs = STEPS.filter(s => byStep[s.id]).map(s => {
     const g = byStep[s.id];
     const info = (d.inspection && d.inspection.before && d.inspection.before[s.id]) || {};
@@ -447,14 +473,15 @@ export function reportHtml(d) {
       <h3>${esc(s.name)}</h3>
       ${(info.conditions || []).length ? `<div class="small gold" style="margin-bottom:6px">${esc(info.conditions.join(' · '))}</div>` : ''}
       <div class="rep-pair">
-        ${b ? `<figure><img src="${esc(b.url)}" alt=""><figcaption>Before</figcaption></figure>` : ''}
-        ${a ? `<figure><img src="${esc(a.url)}" alt=""><figcaption style="background:#C6A24B;color:#14210F">After</figcaption></figure>` : ''}
+        ${b ? fig(b, 'Before', false) : ''}
+        ${a ? fig(a, 'After', true) : ''}
       </div>
-      ${extras.length ? `<div class="rep-pair" style="margin-top:10px">${extras.slice(0, 4).map(p => `<figure><img src="${esc(p.url)}" alt=""><figcaption>${esc(p.phase)}</figcaption></figure>`).join('')}</div>` : ''}
+      ${extras.length ? `<div class="rep-pair" style="margin-top:10px">${extras.slice(0, 4).map(p => fig(p, p.phase, false)).join('')}</div>` : ''}
       ${info.note ? `<div class="rep-note">${esc(info.note)}</div>` : ''}
     </div>`;
   }).join('');
   const gen = byStep._general;
+  const damaged = (d.photos || []).filter(p => hasMarks(p.annotation));
   const checklist = (d.checklist || []).filter(c => c.done);
 
   return `
@@ -473,6 +500,16 @@ export function reportHtml(d) {
       ${d.customer && d.customer.name ? `<div><div class="k">Operator</div><div class="v">${esc(d.customer.name)}</div></div>` : ''}
       ${d.qa ? `<div><div class="k">QA sign-off</div><div class="v">${esc(d.qa.byName || '')} · ${fmtDate(d.qa.at)}</div></div>` : ''}
     </div>
+    ${damaged.length ? `<div class="rep-sec"><h2>Condition noted on arrival</h2>
+      <div class="small muted" style="margin-bottom:12px">Areas documented before service. Marked photos below are part of the permanent job record.</div>
+      <div class="rep-damage">${damaged.map(p => `
+        <div class="rep-dmg-item">
+          <figure class="rep-fig"><img src="${esc(p.url)}" alt="">${marksToSVG(p.annotation)}</figure>
+          <div>
+            <div class="small gold">${esc(p.stepId ? stepById(p.stepId).name : (p.phase === 'after' ? 'After service' : 'On arrival'))}</div>
+            ${p.annotation.note ? `<div class="rep-note" style="margin-top:4px">${esc(p.annotation.note)}</div>` : '<div class="rep-note faint" style="margin-top:4px">Marked — see photo.</div>'}
+          </div>
+        </div>`).join('')}</div></div>` : ''}
     ${stepSecs ? `<div class="rep-sec"><h2>Condition &amp; Results</h2>${stepSecs}</div>` : ''}
     ${gen && (gen.before.length + gen.after.length) ? `<div class="rep-sec"><h2>Additional photos</h2>
       <div class="rep-pair">${[...gen.before, ...gen.after].slice(0, 8).map(p => `<figure><img src="${esc(p.url)}" alt=""><figcaption>${esc(p.phase)}</figcaption></figure>`).join('')}</div></div>` : ''}

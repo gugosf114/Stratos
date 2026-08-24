@@ -1,7 +1,7 @@
 // Stratos Ops service worker — scope /ops/
 // Strategy: network-first for the app shell (always fresh when online, works offline),
 // cache-first for brand images, passthrough for everything else (Firebase, fonts).
-const VERSION = 'stratos-ops-v1.0.0';
+const VERSION = 'stratos-ops-v1.1.0';
 const SHELL = [
   '/ops/',
   '/ops/index.html',
@@ -12,6 +12,7 @@ const SHELL = [
   '/ops/js/firebase.js',
   '/ops/js/util.js',
   '/ops/js/store.js',
+  '/ops/js/annotate.js',
   '/ops/js/views/auth.js',
   '/ops/js/views/jobs.js',
   '/ops/js/views/job.js',
