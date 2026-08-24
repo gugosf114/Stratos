@@ -24,7 +24,12 @@
 <div id="splash" class="splash">
   <img src="/images/logo-emblem.png" alt="">
   <div class="splash-word">STRATOS OPS</div>
+  <div id="splash-slow" class="hidden" style="text-align:center;margin-top:10px">
+    <div style="color:#C8C4BC;font-size:13px;margin-bottom:10px">Taking longer than it should.</div>
+    <button onclick="location.reload()" style="background:none;border:1px solid #9B7E2F;color:#D4B86A;border-radius:10px;padding:10px 18px;font:600 14px 'DM Sans',sans-serif;cursor:pointer">Reload</button>
+  </div>
 </div>
+<script>setTimeout(function(){var s=document.getElementById('splash'),h=document.getElementById('splash-slow');if(s&&h&&!s.classList.contains('hidden'))h.classList.remove('hidden');},12000);</script>
 
 <div id="auth" class="hidden"></div>
 <div id="public" class="hidden"></div>
