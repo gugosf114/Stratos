@@ -1,4 +1,4 @@
-const CACHE = 'stratos-v2';
+const CACHE = 'stratos-v3';
 const ASSETS = [
   '/',
   '/index.html',
@@ -27,6 +27,20 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // HTML: network first so edits show up; cache is the offline fallback
+  if (e.request.mode === 'navigate' || e.request.destination === 'document') {
+    e.respondWith(
+      fetch(e.request)
+        .then(r => {
+          const copy = r.clone();
+          caches.open(CACHE).then(c => c.put(e.request, copy));
+          return r;
+        })
+        .catch(() => caches.match(e.request).then(r => r || caches.match('/index.html')))
+    );
+    return;
+  }
+  // everything else: cache first
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request))
   );
