@@ -476,6 +476,86 @@ section {
 }
 
 /* ═══════════════════════════════════════════
+   PARTNERS — Logo Marquee
+   ═══════════════════════════════════════════ */
+.partners {
+  background: var(--black-light);
+  border-top: 1px solid rgba(198, 162, 75, 0.15);
+  border-bottom: 1px solid rgba(198, 162, 75, 0.15);
+  padding: 40px 0 48px;
+  text-align: center;
+}
+
+.partners-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+}
+
+.partners-marquee {
+  overflow: hidden;
+  position: relative;
+  -webkit-mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 12%, black 88%, transparent);
+}
+
+.partners-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: partnersScroll 35s linear infinite;
+}
+
+.partners-set {
+  display: flex;
+  align-items: center;
+}
+
+.partners-set a {
+  display: flex;
+  align-items: center;
+}
+
+.partners-marquee:hover .partners-track {
+  animation-play-state: paused;
+}
+
+@keyframes partnersScroll {
+  to { transform: translateX(-50%); }
+}
+
+.partner-logo {
+  height: 44px;
+  width: auto;
+  margin: 0 48px;
+  opacity: 0.6;
+  filter: grayscale(1) brightness(1.6);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+
+/* per-logo sizing — mixed aspect ratios need equal visual weight, not equal height */
+.partner-logo[src*="bond"] { height: 30px; }
+.partner-logo[src*="dreamline"] { height: 60px; }
+.partner-logo[src*="mach1"] { height: 64px; }
+.partner-logo[src*="vem"] { height: 58px; filter: grayscale(1) brightness(2.6); }
+
+.partner-logo:hover {
+  opacity: 1;
+  filter: none;
+}
+
+@media (max-width: 640px) {
+  .partner-logo { margin: 0 28px; }
+  .partner-logo[src*="bond"] { height: 22px; }
+  .partner-logo[src*="dreamline"] { height: 46px; }
+  .partner-logo[src*="mach1"] { height: 48px; }
+  .partner-logo[src*="vem"] { height: 44px; }
+}
+
+/* ═══════════════════════════════════════════
    ABOUT — Who We Are
    ═══════════════════════════════════════════ */
 .about {
@@ -2405,6 +2485,43 @@ section {
     </div>
 
     <a href="javascript:void(0)" onclick="openModal('quoteModal')" class="hero-cta">Request a Quote</a>
+  </div>
+</section>
+
+<!-- ═══════════ PARTNERS ═══════════ -->
+<section class="partners" id="partners">
+  <div class="partners-label">Our Partners</div>
+  <div class="partners-marquee">
+    <div class="partners-track">
+      <div class="partners-set">
+        <a href="https://bond.co/" target="_blank" rel="noopener"><img src="images/partners/bond.png" alt="Bond" class="partner-logo"></a>
+        <a href="https://www.dreamlineaviation.com/" target="_blank" rel="noopener"><img src="images/partners/dreamline.png" alt="Dreamline Aviation" class="partner-logo"></a>
+        <a href="https://flymach1.com/" target="_blank" rel="noopener"><img src="images/partners/mach1.png" alt="Mach 1 Aviation" class="partner-logo"></a>
+        <a href="https://www.vemexoticrentals.com/" target="_blank" rel="noopener"><img src="images/partners/vem.png" alt="VEM Exotic Rentals" class="partner-logo"></a>
+        <a href="https://bond.co/" target="_blank" rel="noopener"><img src="images/partners/bond.png" alt="Bond" class="partner-logo"></a>
+        <a href="https://www.dreamlineaviation.com/" target="_blank" rel="noopener"><img src="images/partners/dreamline.png" alt="Dreamline Aviation" class="partner-logo"></a>
+        <a href="https://flymach1.com/" target="_blank" rel="noopener"><img src="images/partners/mach1.png" alt="Mach 1 Aviation" class="partner-logo"></a>
+        <a href="https://www.vemexoticrentals.com/" target="_blank" rel="noopener"><img src="images/partners/vem.png" alt="VEM Exotic Rentals" class="partner-logo"></a>
+        <a href="https://bond.co/" target="_blank" rel="noopener"><img src="images/partners/bond.png" alt="Bond" class="partner-logo"></a>
+        <a href="https://www.dreamlineaviation.com/" target="_blank" rel="noopener"><img src="images/partners/dreamline.png" alt="Dreamline Aviation" class="partner-logo"></a>
+        <a href="https://flymach1.com/" target="_blank" rel="noopener"><img src="images/partners/mach1.png" alt="Mach 1 Aviation" class="partner-logo"></a>
+        <a href="https://www.vemexoticrentals.com/" target="_blank" rel="noopener"><img src="images/partners/vem.png" alt="VEM Exotic Rentals" class="partner-logo"></a>
+      </div>
+      <div class="partners-set" aria-hidden="true">
+        <a href="https://bond.co/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/bond.png" alt="" class="partner-logo"></a>
+        <a href="https://www.dreamlineaviation.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/dreamline.png" alt="" class="partner-logo"></a>
+        <a href="https://flymach1.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/mach1.png" alt="" class="partner-logo"></a>
+        <a href="https://www.vemexoticrentals.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/vem.png" alt="" class="partner-logo"></a>
+        <a href="https://bond.co/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/bond.png" alt="" class="partner-logo"></a>
+        <a href="https://www.dreamlineaviation.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/dreamline.png" alt="" class="partner-logo"></a>
+        <a href="https://flymach1.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/mach1.png" alt="" class="partner-logo"></a>
+        <a href="https://www.vemexoticrentals.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/vem.png" alt="" class="partner-logo"></a>
+        <a href="https://bond.co/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/bond.png" alt="" class="partner-logo"></a>
+        <a href="https://www.dreamlineaviation.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/dreamline.png" alt="" class="partner-logo"></a>
+        <a href="https://flymach1.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/mach1.png" alt="" class="partner-logo"></a>
+        <a href="https://www.vemexoticrentals.com/" target="_blank" rel="noopener" tabindex="-1"><img src="images/partners/vem.png" alt="" class="partner-logo"></a>
+      </div>
+    </div>
   </div>
 </section>
 
