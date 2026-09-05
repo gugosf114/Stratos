@@ -654,6 +654,90 @@ section {
   filter: brightness(1) saturate(1);
 }
 
+/* about slider — two slides, truck then pet service, then back. CSS only. */
+.about-image { overflow: hidden; }
+
+.about-slides {
+  display: flex;
+  width: 200%;
+  animation: about-slide 16s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+
+.about-image:hover .about-slides { animation-play-state: paused; }
+
+.about-slide {
+  width: 50%;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-pet {
+  width: 100%;
+  height: 100%;
+  padding: 40px 44px;
+  border: 1px solid rgba(198, 162, 75, 0.22);
+  background: var(--black-card);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 0 60px rgba(198, 162, 75, 0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.about-pet-label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.about-pet h3 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 20px;
+}
+
+.about-pet ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 24px;
+}
+
+.about-pet li {
+  font-size: 14px;
+  color: var(--gray-300);
+  line-height: 1.5;
+  padding-left: 20px;
+  position: relative;
+}
+
+.about-pet li::before {
+  content: '\2726';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-size: 11px;
+  color: var(--gold);
+  opacity: 0.7;
+}
+
+@keyframes about-slide {
+  0%, 42%   { transform: translateX(0); }
+  48%, 92%  { transform: translateX(-50%); }
+  98%, 100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-slides { animation: none; }
+}
+
 /* ═══════════════════════════════════════════
    STATS COUNTER — Animated numbers
    ═══════════════════════════════════════════ */
@@ -1676,6 +1760,10 @@ section {
   .about-content { gap: 32px; }
   .about-text p { font-size: 15px; }
   .about-image { max-width: 100%; }
+  .about-pet { padding: 24px 20px; }
+  .about-pet h3 { font-size: 20px; margin-bottom: 14px; }
+  .about-pet ul { gap: 8px 14px; }
+  .about-pet li { font-size: 12px; }
 
   /* Section titles */
   .section-title {
@@ -2637,11 +2725,38 @@ section {
           <div class="about-badge-icon">✦</div>
           <div class="about-badge-text"><strong>Fully Insured</strong> &amp; Bonded</div>
         </div>
+        <div class="about-badge">
+          <div class="about-badge-icon">&#10070;</div>
+          <div class="about-badge-text"><strong>Post-Pet-Flight Detailing</strong> &mdash; Specialty Service</div>
+        </div>
       </div>
     </div>
 
     <div class="about-image reveal reveal-delay-3">
-      <img src="images/van.png" alt="Stratos mobile detailing unit">
+      <div class="about-slides">
+        <div class="about-slide">
+          <img src="images/van.png" alt="Stratos mobile detailing unit">
+        </div>
+        <div class="about-slide">
+          <div class="about-pet">
+            <div class="about-pet-label">Specialty Service</div>
+            <h3>Post-Pet-Flight Detailing</h3>
+            <ul>
+              <li>Deep dog-hair removal</li>
+              <li>Cat-hair removal</li>
+              <li>Upholstery extraction</li>
+              <li>Carpet cleaning</li>
+              <li>Pet-odor elimination</li>
+              <li>Paw-print removal</li>
+              <li>Cabin sanitation</li>
+              <li>Leather conditioning</li>
+              <li>Rapid FBO / hangar turnaround</li>
+              <li>Recurring charter cleaning</li>
+              <li>Discreet VIP service</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
