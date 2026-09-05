@@ -663,7 +663,7 @@ section {
   transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-.about-slides.show-pet { transform: translateX(-50%); }
+.about-slides.show-second { transform: translateX(-50%); }
 
 .about-dots {
   display: flex;
@@ -2765,9 +2765,6 @@ section {
     <div class="about-image reveal reveal-delay-3">
       <div class="about-slides">
         <div class="about-slide">
-          <img src="images/van.png" alt="Stratos mobile detailing unit">
-        </div>
-        <div class="about-slide">
           <div class="about-pet">
             <div class="about-pet-label">Specialty Service</div>
             <h3>Post-Pet-Flight Detailing</h3>
@@ -2786,10 +2783,13 @@ section {
             </ul>
           </div>
         </div>
+        <div class="about-slide">
+          <img src="images/van.png" alt="Stratos mobile detailing unit">
+        </div>
       </div>
       <div class="about-dots" role="tablist" aria-label="About slides">
-        <button class="about-dot active" type="button" role="tab" aria-selected="true" aria-label="Mobile detailing unit" data-slide="0"></button>
-        <button class="about-dot" type="button" role="tab" aria-selected="false" aria-label="Post-Pet-Flight Detailing" data-slide="1"></button>
+        <button class="about-dot active" type="button" role="tab" aria-selected="true" aria-label="Post-Pet-Flight Detailing" data-slide="0"></button>
+        <button class="about-dot" type="button" role="tab" aria-selected="false" aria-label="Mobile detailing unit" data-slide="1"></button>
       </div>
     </div>
   </div>
@@ -3284,7 +3284,7 @@ window.addEventListener('appinstalled', () => {
   deferredPrompt = null;
 });
 
-// ── About slider: truck ⇄ pet service. Auto-cycles, dots + swipe jump, hover pauses.
+// ── About slider: pet service first, truck second. Auto-cycles, dots + swipe jump, hover pauses.
 (function () {
   const slides = document.querySelector('.about-slides');
   const dots = document.querySelectorAll('.about-dot');
@@ -3294,7 +3294,7 @@ window.addEventListener('appinstalled', () => {
   let cur = 0, timer = null;
   function go(i) {
     cur = i;
-    slides.classList.toggle('show-pet', i === 1);
+    slides.classList.toggle('show-second', i === 1);
     dots.forEach((d, k) => {
       d.classList.toggle('active', k === i);
       d.setAttribute('aria-selected', k === i ? 'true' : 'false');
