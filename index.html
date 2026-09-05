@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stratos Aviation Detailing — Private Jet Detailing in Los Angeles</title>
+<meta name="description" content="Mobile private jet detailing in Los Angeles — Van Nuys, Burbank, Santa Monica, Long Beach, LAX. Ceramic coating, interior sanitation, brightwork polishing, and specialty post-pet-flight detailing. FAA-compliant products, 24/7 on-site crews.">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#C6A24B">
 <link rel="apple-touch-icon" href="images/icon-192.png">
@@ -911,7 +912,8 @@ section {
   filter: drop-shadow(0 0 12px rgba(198, 162, 75, 0.4));
 }
 
-.service-card h3 {
+.service-card h3,
+.service-feature h3 {
   font-family: var(--font-display);
   font-size: 22px;
   font-weight: 500;
@@ -923,10 +925,74 @@ section {
     0 4px 6px rgba(0,0,0,0.15);
 }
 
-.service-card p {
+.service-card p,
+.service-feature p {
   font-size: 14px;
   color: var(--gray-400);
   line-height: 1.8;
+}
+
+/* featured wide card — specialty service */
+.service-feature {
+  margin-top: 24px;
+  padding: 44px 40px;
+  border: 1px solid rgba(198, 162, 75, 0.22);
+  background: rgba(198, 162, 75, 0.025);
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 0 60px rgba(198, 162, 75, 0.03);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.service-feature:hover {
+  border-color: rgba(198, 162, 75, 0.4);
+  background: rgba(198, 162, 75, 0.04);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(198, 162, 75, 0.08);
+}
+
+.service-feature:hover .service-icon {
+  opacity: 1;
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 12px rgba(198, 162, 75, 0.4));
+}
+
+.service-feature-label {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.service-feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px 28px;
+}
+
+.service-feature-list li {
+  font-size: 14px;
+  color: var(--gray-300);
+  line-height: 1.6;
+  padding-left: 22px;
+  position: relative;
+}
+
+.service-feature-list li::before {
+  content: '\2726';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-size: 12px;
+  color: var(--gold);
+  opacity: 0.7;
 }
 
 .services-note {
@@ -1651,6 +1717,11 @@ section {
   }
   .service-card h3 { font-size: 19px; }
   .service-card p { font-size: 13px; }
+  .service-feature { grid-template-columns: 1fr; gap: 28px; padding: 32px 24px; }
+  .service-feature h3 { font-size: 19px; }
+  .service-feature p { font-size: 13px; }
+  .service-feature-list { grid-template-columns: 1fr; gap: 10px; }
+  .service-feature-list li { font-size: 13px; }
   .services-note { font-size: 13px; padding: 20px 16px; }
 
   /* Why Stratos */
@@ -2233,6 +2304,7 @@ section {
       'Want a detailing quote?',
       'Service at your hangar?',
       'Need ceramic coating?',
+      'Pet hair in the cabin?',
       'Which airports served?'
     ];
     let phraseIdx = 0;
@@ -2700,6 +2772,28 @@ section {
       <h3>Photo Documentation</h3>
       <p>Before-and-after photo documentation for every job. Full transparency and quality assurance on record.</p>
     </div>
+  </div>
+
+  <div class="service-feature reveal reveal-delay-2">
+    <div class="service-feature-intro">
+      <span class="service-icon">&#10070;</span>
+      <div class="service-feature-label">Specialty Service</div>
+      <h3>Post-Pet-Flight Detailing</h3>
+      <p>Stratos specializes in premium post-pet-flight aircraft detailing. After four-legged passengers fly, every trace is removed &mdash; hair, odor, and paw prints &mdash; before the next departure.</p>
+    </div>
+    <ul class="service-feature-list">
+      <li>Deep dog-hair removal</li>
+      <li>Cat-hair removal</li>
+      <li>Upholstery extraction</li>
+      <li>Carpet cleaning</li>
+      <li>Pet-odor elimination</li>
+      <li>Paw-print removal</li>
+      <li>Cabin sanitation</li>
+      <li>Leather conditioning</li>
+      <li>Rapid FBO / hangar turnaround</li>
+      <li>Recurring charter cleaning</li>
+      <li>Discreet VIP service</li>
+    </ul>
   </div>
 
   <div class="services-note reveal reveal-delay-5">

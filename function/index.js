@@ -25,6 +25,7 @@ Services (do not invent others):
 - Brightwork polishing
 - Belly & landing-gear cleaning
 - Regular preservation / maintenance programs for owners and operators
+- Post-pet-flight detailing (specialty service) — deep dog-hair and cat-hair removal, upholstery extraction, carpet cleaning, pet-odor elimination, paw-print removal, cabin sanitation, leather conditioning; rapid FBO/hangar turnaround, recurring charter cleaning, discreet VIP service
 
 Contact:
 - Phone: 424-288-8882
