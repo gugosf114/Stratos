@@ -1,0 +1,37 @@
+# Run a Google Cloud command against the bakers-agent project (where Stratos's
+# functions, Firestore and photo bucket live). Keyless: GitHub's OIDC token is
+# exchanged for the claude-stratos service account via Workload Identity
+# Federation, which only trusts this repo's main branch.
+name: gcloud
+
+on:
+  workflow_dispatch:
+    inputs:
+      command:
+        description: Shell command to run (gcloud is authenticated to bakers-agent)
+        required: true
+        default: gcloud functions list
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/787543109204/locations/global/workloadIdentityPools/github/providers/stratos-repo
+          service_account: claude-stratos@bakers-agent.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: bakers-agent
+
+      - name: Run command
+        env:
+          CMD: ${{ inputs.command }}
+        run: bash -c "$CMD"
