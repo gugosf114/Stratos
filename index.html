@@ -1178,7 +1178,7 @@ section {
   left: calc(50cqw - var(--w) / 2);
   top: calc(50cqh - var(--w) * 0.625);
   transform-origin: 50.2% 52%;
-  animation: yachtZoom 26s ease-in-out infinite;
+  animation: yachtZoom 22s ease-in-out infinite;
 }
 
 .yacht-scene img {
@@ -1189,107 +1189,13 @@ section {
   filter: saturate(0.9);
 }
 
-/* in close, hold while the fin makes its lap, back out */
+/* slow push in on the yacht and back out */
 @keyframes yachtZoom {
   0%, 100% { transform: scale(1.03); }
-  32%, 70% { transform: scale(var(--zoom)); }
+  45%, 55% { transform: scale(var(--zoom)); }
 }
 
-/* rings spreading off the hull */
-.yacht-ripples {
-  position: absolute;
-  left: 50.2%;
-  top: 52%;
-  width: 11%;
-  height: 30%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.yacht-ripples span {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  opacity: 0;
-  animation: ripple 7.5s ease-out infinite;
-}
-
-.yacht-ripples span:nth-child(2) { animation-delay: 2.5s; }
-.yacht-ripples span:nth-child(3) { animation-delay: 5s; }
-
-@keyframes ripple {
-  0%   { transform: scale(0.95); opacity: 0; }
-  12%  { opacity: 0.8; }
-  100% { transform: scale(2.1); opacity: 0; }
-}
-
-/* a shark fin circling the yacht, once per zoom */
-.shark-orbit {
-  position: absolute;
-  left: 50.2%;
-  top: 52%;
-  width: 36%;
-  aspect-ratio: 1;
-  margin-left: -18%;
-  margin-top: -18%;
-  pointer-events: none;
-  animation: sharkOrbit 26s linear infinite;
-}
-
-.shark {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 11%;
-  aspect-ratio: 24 / 21;
-  transform: translate(-50%, -80%);
-  opacity: 0;
-  animation: sharkShow 26s linear infinite;
-}
-
-.shark-fin {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  animation: finUpright 26s linear infinite;
-}
-
-/* foam trailing behind the fin; turns with the orbit so it always points back along the path */
-.shark-wake {
-  position: absolute;
-  right: 45%;
-  top: 72%;
-  width: 380%;
-  height: 70%;
-  transform: translateY(-50%);
-  clip-path: polygon(100% 50%, 0 0, 0 100%);
-  background: linear-gradient(to left, rgba(255, 255, 255, 0.55), transparent);
-}
-
-@keyframes sharkOrbit {
-  0%, 36%   { transform: rotate(0deg); }
-  68%, 100% { transform: rotate(360deg); }
-}
-
-@keyframes sharkShow {
-  0%, 36%   { opacity: 0; }
-  40%, 64%  { opacity: 0.9; }
-  68%, 100% { opacity: 0; }
-}
-
-/* keep the fin upright and facing its direction of travel */
-@keyframes finUpright {
-  0%, 36%   { transform: rotate(0deg) scaleX(1); }
-  44%       { transform: rotate(-90deg) scaleX(1); }
-  44.01%    { transform: rotate(-90deg) scaleX(-1); }
-  60%       { transform: rotate(-270deg) scaleX(-1); }
-  60.01%    { transform: rotate(-270deg) scaleX(1); }
-  68%, 100% { transform: rotate(-360deg) scaleX(1); }
-}
-
-/* faint light glinting on the water */
+/* light glinting on the water: two layers of soft highlights drifting against each other */
 .yacht-water {
   position: absolute;
   inset: 0;
@@ -1309,18 +1215,18 @@ section {
     radial-gradient(ellipse 46px 9px at 55% 15%, rgba(255, 255, 255, 0.6), transparent 70%);
   background-size: 190px 120px;
   animation: waterGlint 16s linear infinite;
-  opacity: 0.35;
+  opacity: 0.55;
 }
 
 .yacht-water::after {
   background-size: 270px 170px;
   animation: waterGlint2 23s linear infinite, glintPulse 5s ease-in-out infinite;
-  opacity: 0.25;
+  opacity: 0.4;
 }
 
 @keyframes waterGlint  { to { transform: translate(190px, 120px); } }
 @keyframes waterGlint2 { to { transform: translate(-270px, 170px); } }
-@keyframes glintPulse  { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.35; } }
+@keyframes glintPulse  { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.5; } }
 
 .yacht-photo::after {
   content: '';
@@ -1551,10 +1457,8 @@ section {
 
 @media (prefers-reduced-motion: reduce) {
   .yacht-scene,
-  .yacht-ripples span,
   .yacht-water::before,
   .yacht-water::after { animation: none; }
-  .shark-orbit { display: none; }
 }
 
 .yacht-btn {
@@ -2195,6 +2099,169 @@ section {
   font-size: 12px;
   color: var(--gray-700);
   letter-spacing: 1px;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION BAR — phones/tablets, where the top nav links are hidden.
+   Pops up from the bottom while scrolling and marks the section in view.
+   ═══════════════════════════════════════════ */
+.section-bar,
+.scroll-rail { display: none; }
+
+/* land anchored sections below the fixed ticker + nav */
+section[id] { scroll-margin-top: 180px; }
+
+@media (max-width: 1024px) {
+  section[id] { scroll-margin-top: 44px; }
+
+  .section-bar {
+    display: flex;
+    position: fixed;
+    left: 50%;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    z-index: 950;
+    max-width: calc(100vw - 20px);
+    padding: 5px;
+    gap: 1px;
+    background: rgba(11, 26, 11, 0.82);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+    border: 1px solid rgba(198, 162, 75, 0.35);
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transform: translate(-50%, 150%);
+    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.35s ease;
+  }
+
+  .section-bar.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .section-bar a {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    padding: 9px 8px;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--gray-300);
+    border-radius: 999px;
+    transition: color 0.3s ease;
+  }
+
+  .section-bar a.active { color: var(--black); }
+
+  /* gold pill that slides under the active link */
+  .section-bar-pill {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 0;
+    width: 0;
+    border-radius: 999px;
+    background: var(--gold);
+    box-shadow: 0 0 14px rgba(198, 162, 75, 0.4);
+    opacity: 0;
+    transition: transform 0.45s cubic-bezier(0.23, 1, 0.32, 1), width 0.45s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s ease;
+  }
+
+  /* thin rail on the right edge: a dot per section, a gold marker for where you are */
+  .scroll-rail {
+    display: block;
+    position: fixed;
+    right: 4px;
+    top: 72px;
+    bottom: 96px;
+    width: 10px;
+    z-index: 940;
+    pointer-events: none;
+    opacity: 0.4;
+    transition: opacity 0.4s ease;
+  }
+
+  .scroll-rail.show { opacity: 1; }
+
+  .scroll-rail::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(198, 162, 75, 0.22);
+  }
+
+  .scroll-rail-fill {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 0;
+    background: linear-gradient(var(--gold-dark), var(--gold));
+  }
+
+  .scroll-rail-dot {
+    position: absolute;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    margin: -2.5px 0 0 -2.5px;
+    border-radius: 50%;
+    background: rgba(198, 162, 75, 0.5);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .scroll-rail-dot.on {
+    background: var(--gold-light);
+    box-shadow: 0 0 8px rgba(198, 162, 75, 0.8);
+  }
+
+  .scroll-rail-marker {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    border-radius: 50%;
+    border: 1px solid var(--gold);
+    background: var(--black);
+    box-shadow: 0 0 10px rgba(198, 162, 75, 0.6);
+  }
+
+  .scroll-rail-label {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 3px 8px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--gold);
+    background: rgba(11, 26, 11, 0.85);
+    border: 1px solid rgba(198, 162, 75, 0.3);
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .scroll-rail.show .scroll-rail-label:not(:empty) { opacity: 1; }
+
+  /* keep the install button clear of the bar */
+  #installBtn { bottom: 76px !important; }
+}
+
+@media (max-width: 360px) {
+  .section-bar a { padding: 8px 6px; font-size: 8.5px; letter-spacing: 0.2px; }
 }
 
 /* ═══════════════════════════════════════════
@@ -3144,6 +3211,21 @@ section {
   </ul>
 </nav>
 
+<!-- Section bar (phones/tablets) -->
+<nav class="section-bar" id="sectionBar" aria-label="Sections">
+  <span class="section-bar-pill" aria-hidden="true"></span>
+  <a href="#about">About</a>
+  <a href="#locations">Locations</a>
+  <a href="#services">Services</a>
+  <a href="#yachts">Yachts</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<div class="scroll-rail" id="scrollRail" aria-hidden="true">
+  <span class="scroll-rail-fill"></span>
+  <span class="scroll-rail-marker"><span class="scroll-rail-label"></span></span>
+</div>
+
 <!-- ═══════════ HERO ═══════════ -->
 <section class="hero" id="hero">
   <div class="hero-bg"></div>
@@ -3442,13 +3524,6 @@ section {
     <div class="yacht-photo reveal reveal-delay-2">
       <div class="yacht-scene">
         <img src="images/yacht.jpg" alt="Motor yacht on open water, seen from above" loading="lazy">
-        <div class="yacht-ripples" aria-hidden="true"><span></span><span></span><span></span></div>
-        <div class="shark-orbit" aria-hidden="true">
-          <div class="shark">
-            <span class="shark-wake"></span>
-            <svg class="shark-fin" viewBox="0 0 24 21"><ellipse cx="13" cy="19.5" rx="12" ry="2" fill="rgba(255,255,255,0.65)"/><path d="M2 19.5 C6 15 7 8 7 1 C13 4 20 12 24 19.5 Z" fill="#1d2b33"/><path d="M7 1 C13 4 20 12 24 19.5" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.8"/></svg>
-          </div>
-        </div>
         <div class="yacht-water" aria-hidden="true"></div>
       </div>
       <div class="yacht-tagline">Private. Professional. <span>Meticulous.</span></div>
@@ -3916,8 +3991,9 @@ window.addEventListener('appinstalled', () => {
   start();
 })();
 
-// ── Yacht before/after slider: drag or arrow keys. While idle it glides toward the bow and back;
-//    someone taking the handle stops it, and it picks up again after a few seconds alone.
+// ── Yacht before/after slider: drag or arrow keys. While idle it "dances": out to the bow, back,
+//    then smaller swings each way before settling, rests, and repeats. Taking the handle stops it;
+//    it picks up again after a few seconds alone.
 (function () {
   const frame = document.querySelector('.ba-frame');
   if (!frame) return;
@@ -3943,15 +4019,22 @@ window.addEventListener('appinstalled', () => {
   range.addEventListener('input', () => { lastTouch = performance.now(); set(+range.value); });
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const PERIOD = 8000, RESUME_AFTER = 5000, CENTER = 50, SWING = 24;
+  const DANCE = [50, 82, 30, 68, 40, 60, 46, 54, 50]; // bow is on the right
+  const SWING_MS = 950, REST_MS = 2600, RESUME_AFTER = 5000;
+  const CYCLE = SWING_MS * (DANCE.length - 1) + REST_MS;
+  const ease = k => (k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2);
   let visible = false, raf = null, t0 = null;
   const tick = now => {
     raf = null;
     if (!visible) return;
     if (!dragging && now - lastTouch > RESUME_AFTER) {
       if (t0 === null) t0 = now;
-      const target = CENTER + SWING * Math.sin((now - t0) / PERIOD * 2 * Math.PI);
-      set(cur + (target - cur) * 0.08); // ease in rather than jump after a hand-off
+      const t = (now - t0) % CYCLE;
+      const i = Math.floor(t / SWING_MS);
+      const target = i >= DANCE.length - 1
+        ? DANCE[DANCE.length - 1]
+        : DANCE[i] + (DANCE[i + 1] - DANCE[i]) * ease((t - i * SWING_MS) / SWING_MS);
+      set(cur + (target - cur) * 0.2); // ease in rather than jump after a hand-off
     } else {
       t0 = null;
     }
@@ -3961,6 +4044,74 @@ window.addEventListener('appinstalled', () => {
     visible = entries[0].isIntersecting;
     if (visible && !raf) raf = requestAnimationFrame(tick);
   }, { threshold: 0.2 }).observe(frame);
+})();
+
+// ── Section bar + side rail (phones/tablets): the bar pops up on scroll or touch once past the
+//    hero and marks the section in view; the rail shows how far down the page you are. Both
+//    settle back after a few quiet seconds.
+(function () {
+  const bar = document.getElementById('sectionBar');
+  if (!bar) return;
+  const pill = bar.querySelector('.section-bar-pill');
+  const links = [...bar.querySelectorAll('a')];
+  const targets = links.map(a => document.querySelector(a.getAttribute('href')));
+  const HIDE_AFTER = 2600;
+  let hideTimer = null, active;
+
+  const rail = document.getElementById('scrollRail');
+  const fill = rail.querySelector('.scroll-rail-fill');
+  const marker = rail.querySelector('.scroll-rail-marker');
+  const label = rail.querySelector('.scroll-rail-label');
+  const dots = targets.map(() => rail.appendChild(Object.assign(document.createElement('span'), { className: 'scroll-rail-dot' })));
+
+  const drawRail = () => {
+    const h = rail.clientHeight;
+    if (!h) return;
+    const range = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const y = Math.min(1, window.scrollY / range) * h;
+    fill.style.height = y + 'px';
+    marker.style.transform = 'translateY(' + y + 'px)';
+    targets.forEach((t, i) => {
+      if (!t) return;
+      const top = Math.min(1, Math.max(0, (t.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.45) / range));
+      dots[i].style.top = top * h + 'px';
+      dots[i].classList.toggle('on', links[i] === active);
+    });
+    label.textContent = active ? active.textContent : '';
+  };
+
+  const movePill = a => {
+    if (!a) { pill.style.opacity = '0'; return; }
+    pill.style.opacity = '1';
+    pill.style.width = a.offsetWidth + 'px';
+    pill.style.transform = 'translateX(' + a.offsetLeft + 'px)';
+  };
+  const setActive = a => {
+    if (a === active) return;
+    active = a;
+    links.forEach(l => l.classList.toggle('active', l === a));
+    movePill(a);
+  };
+  const spy = () => {
+    const line = window.innerHeight * 0.45;
+    let current = null;
+    targets.forEach((t, i) => { if (t && t.getBoundingClientRect().top <= line) current = links[i]; });
+    setActive(current);
+    drawRail();
+  };
+  const show = () => {
+    const pastHero = window.scrollY > window.innerHeight * 0.6;
+    bar.classList.toggle('show', pastHero);
+    rail.classList.add('show');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => { bar.classList.remove('show'); rail.classList.remove('show'); }, HIDE_AFTER);
+  };
+
+  window.addEventListener('scroll', () => { spy(); show(); }, { passive: true });
+  window.addEventListener('touchstart', show, { passive: true });
+  window.addEventListener('resize', () => { const a = active; active = undefined; setActive(a); drawRail(); });
+  window.addEventListener('load', drawRail);
+  spy();
 })();
 
 // ── PWA Service Worker
