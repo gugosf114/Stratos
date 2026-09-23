@@ -25,6 +25,7 @@ Services (do not invent others):
 - Brightwork polishing
 - Belly & landing-gear cleaning
 - Regular preservation / maintenance programs for owners and operators
+- Yacht & boat detailing — interior (upholstery & fabric, leather, carpet & flooring, galley & cabin, odor elimination, glass & windows) and exterior (hull & topside wash, stainless & metal polishing, fiberglass & gelcoat care, teak, exterior glass, deck). Logistics and scheduling for yachts go to 424-288-8882.
 - Post-pet-flight detailing (specialty service) — deep dog-hair and cat-hair removal, upholstery extraction, carpet cleaning, pet-odor elimination, paw-print removal, cabin sanitation, leather conditioning; rapid FBO/hangar turnaround, recurring charter cleaning, discreet VIP service
 
 Contact:
