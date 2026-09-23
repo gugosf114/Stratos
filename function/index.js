@@ -1,5 +1,5 @@
 // Stratos Aviation Detailing — Chat Concierge Cloud Function
-// HTTP trigger. Receives { message: string }, calls Claude Sonnet 4.6, returns { reply: string }.
+// HTTP trigger. Receives { message: string, history?: [{role, content}] }, calls Claude Sonnet 4.6, returns { reply: string }.
 // Anthropic API key is injected via Secret Manager as env var ANTHROPIC_API_KEY.
 
 const functions = require('@google-cloud/functions-framework');
@@ -49,6 +49,25 @@ const FALLBACK_REPLY = 'Sorry, I am having trouble connecting right now. Please 
 const CALL_REPORT_EMAIL = 'edgar@stratosjetdetail.com';
 const FORM_SUBMIT_URL = `https://formsubmit.co/ajax/${CALL_REPORT_EMAIL}`;
 const MAX_TRANSCRIPT_LENGTH = 30000;
+
+const MAX_HISTORY_TURNS = 10;
+
+// Prior turns from the browser. Untrusted: keep only well-formed user/assistant
+// text, cap size, and make sure it alternates starting with a user turn.
+function cleanHistory(raw) {
+  if (!Array.isArray(raw)) return [];
+  const turns = raw
+    .filter((t) => t && (t.role === 'user' || t.role === 'assistant') && typeof t.content === 'string' && t.content.trim())
+    .slice(-MAX_HISTORY_TURNS)
+    .map((t) => ({ role: t.role, content: t.content.trim().slice(0, 1500) }));
+  const out = [];
+  for (const t of turns) {
+    const expected = out.length % 2 === 0 ? 'user' : 'assistant';
+    if (t.role === expected) out.push(t);
+  }
+  if (out.length % 2 === 1) out.pop();
+  return out;
+}
 
 function setCors(res, req) {
   // Permissive for launch; tighten to https://stratosjetdetail.com once verified.
@@ -207,7 +226,7 @@ functions.http('stratosChat', async (req, res) => {
         model: MODEL,
         max_tokens: MAX_TOKENS,
         system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userMessage }],
+        messages: [...cleanHistory(body.history), { role: 'user', content: userMessage }],
       }),
     });
 

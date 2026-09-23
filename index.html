@@ -2373,6 +2373,8 @@ section {
 
   /* Mobile: let chat window span the viewport instead of clipping off-screen */
   @media (max-width: 480px) {
+    /* the typewriter pill lands on top of the hero "Request a Quote" button on phones */
+    #stratos-chat-tooltip { display: none; }
     #stratos-chat-window {
       left: 12px;
       right: 12px;
@@ -2609,6 +2611,9 @@ section {
       if (isChatOpen()) positionChatWindow();
     });
 
+    // Running conversation so follow-up questions keep their context.
+    const chatHistory = [];
+
     async function sendStratosMessage() {
       const text = inputEl.value.trim();
       if (!text) return;
@@ -2623,12 +2628,14 @@ section {
         const response = await fetch('https://us-central1-bakers-agent.cloudfunctions.net/stratos-chat-v1', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text })
+          body: JSON.stringify({ message: text, history: chatHistory.slice(-10) })
         });
 
         const data = await response.json();
         document.getElementById(loadingId).remove();
-        appendMessage(data.reply, 'bot');
+        const reply = (data && data.reply) || 'Sorry, I am having trouble connecting right now. Please call us at 424-288-8882.';
+        appendMessage(reply, 'bot');
+        if (data && data.reply) chatHistory.push({ role: 'user', content: text }, { role: 'assistant', content: data.reply });
       } catch (err) {
         document.getElementById(loadingId).remove();
         appendMessage('Sorry, I am having trouble connecting right now. Please call us at 424-288-8882.', 'bot');
@@ -3010,6 +3017,7 @@ section {
     <p class="modal-desc">Have a question? Send us a message and we'll get back to you within 24 hours.</p>
     <form id="contactForm" onsubmit="submitForm(event, 'contact')">
       <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <input type="hidden" name="_subject" value="Stratos Website — Contact Inquiry">
       <input type="hidden" name="_template" value="table">
       <div class="form-group">
@@ -3045,6 +3053,7 @@ section {
     <p class="modal-desc">Tell us about your aircraft and we'll put together a custom estimate.</p>
     <form id="quoteForm" onsubmit="submitForm(event, 'quote')">
       <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <input type="hidden" name="_subject" value="Stratos Website — Quote Request">
       <input type="hidden" name="_template" value="table">
       <div class="form-row">
@@ -3130,9 +3139,9 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-// ── Scroll to top on refresh
+// ── Scroll to top on refresh (but let #section links land where they point)
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-window.scrollTo(0, 0);
+if (!location.hash) window.scrollTo(0, 0);
 
 // ── Nav Scroll
 const nav = document.getElementById('nav');
@@ -3245,6 +3254,8 @@ function submitForm(e, type) {
   })
   .then(r => r.json())
   .then(result => {
+    // formsubmit answers 200 with success:"false" when it did not send; treat that as a failure
+    if (!result || !(result.success === true || result.success === 'true')) throw new Error('not sent');
     form.style.display = 'none';
     document.getElementById(type === 'contact' ? 'contactSuccess' : 'quoteSuccess').style.display = 'block';
   })
