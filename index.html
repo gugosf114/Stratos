@@ -642,83 +642,20 @@ section {
   margin: 0 auto;
 }
 
-.about-image img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  filter: brightness(0.95) saturate(0.9);
-  transition: filter 0.6s ease;
-}
-
-.about-image:hover img {
-  filter: brightness(1) saturate(1);
-}
-
-/* about slider — two slides, truck then pet service, then back. CSS only. */
-.about-image { overflow: hidden; }
-
-.about-slides {
-  display: flex;
-  width: 200%;
-  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1);
-}
-
-.about-slides.show-second { transform: translateX(-50%); }
-
-.about-dots {
-  display: flex;
-  justify-content: center;
-  gap: 4px;
-  margin-top: 14px;
-}
-
-.about-dot {
-  width: 28px;
-  height: 28px;
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.about-dot::before {
-  content: '';
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1px solid rgba(198, 162, 75, 0.6);
-  transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
-}
-
-.about-dot:hover::before { border-color: var(--gold); }
-
-.about-dot.active::before {
-  background: var(--gold);
-  border-color: var(--gold);
-  transform: scale(1.15);
-}
-
-.about-slide {
-  width: 50%;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+/* Post-Pet-Flight box: copy sits top-left; the cabin photo fills the lower part and
+   feathers out into the box on every side instead of sitting in as a hard rectangle. */
 .about-pet {
-  width: 100%;
-  height: 100%;
-  padding: 40px 44px;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 44px 0;
   border: 1px solid rgba(198, 162, 75, 0.22);
   background: var(--black-card);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 0 60px rgba(198, 162, 75, 0.03);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+}
+
+.about-pet-copy {
+  position: relative;
+  z-index: 1;
 }
 
 .about-pet-label {
@@ -764,8 +701,32 @@ section {
   opacity: 0.7;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .about-slides { transition: none; }
+.about-pet-photo {
+  position: relative;
+  margin: -28px -44px 0; /* bleed to the box edges, tuck up under the list */
+  aspect-ratio: 1200 / 656;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 32%, #000 84%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, #000 32%, #000 84%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.about-pet-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.92) brightness(0.9);
+  transition: transform 6s cubic-bezier(0.23, 1, 0.32, 1), filter 0.6s ease;
+}
+
+.about-pet:hover .about-pet-photo img {
+  transform: scale(1.04);
+  filter: saturate(1) brightness(0.96);
 }
 
 /* ═══════════════════════════════════════════
@@ -2332,7 +2293,8 @@ section[id] { scroll-margin-top: 180px; }
   .about-content { gap: 32px; }
   .about-text p { font-size: 15px; }
   .about-image { max-width: 100%; }
-  .about-pet { padding: 24px 20px; }
+  .about-pet { padding: 24px 20px 0; }
+  .about-pet-photo { margin: -16px -20px 0; }
   .about-pet h3 { font-size: 20px; margin-bottom: 14px; }
   .about-pet ul { gap: 8px 14px; }
   .about-pet li { font-size: 12px; }
@@ -3329,33 +3291,27 @@ section[id] { scroll-margin-top: 180px; }
     </div>
 
     <div class="about-image reveal reveal-delay-3">
-      <div class="about-slides">
-        <div class="about-slide">
-          <div class="about-pet">
-            <div class="about-pet-label">Specialty Service</div>
-            <h3>Post-Pet-Flight Detailing</h3>
-            <ul>
-              <li>Deep dog-hair removal</li>
-              <li>Cat-hair removal</li>
-              <li>Upholstery extraction</li>
-              <li>Carpet cleaning</li>
-              <li>Pet-odor elimination</li>
-              <li>Paw-print removal</li>
-              <li>Cabin sanitation</li>
-              <li>Leather conditioning</li>
-              <li>Rapid FBO / hangar turnaround</li>
-              <li>Recurring charter cleaning</li>
-              <li>Discreet VIP service</li>
-            </ul>
-          </div>
+      <div class="about-pet">
+        <div class="about-pet-copy">
+          <div class="about-pet-label">Specialty Service</div>
+          <h3>Post-Pet-Flight Detailing</h3>
+          <ul>
+            <li>Deep dog-hair removal</li>
+            <li>Cat-hair removal</li>
+            <li>Upholstery extraction</li>
+            <li>Carpet cleaning</li>
+            <li>Pet-odor elimination</li>
+            <li>Paw-print removal</li>
+            <li>Cabin sanitation</li>
+            <li>Leather conditioning</li>
+            <li>Rapid FBO / hangar turnaround</li>
+            <li>Recurring charter cleaning</li>
+            <li>Discreet VIP service</li>
+          </ul>
         </div>
-        <div class="about-slide">
-          <img src="images/van.png" alt="Stratos mobile detailing unit">
+        <div class="about-pet-photo">
+          <img src="images/pet-cabin.jpg" alt="Two children with a golden retriever and a white cat in a private jet cabin" loading="lazy">
         </div>
-      </div>
-      <div class="about-dots" role="tablist" aria-label="About slides">
-        <button class="about-dot active" type="button" role="tab" aria-selected="true" aria-label="Post-Pet-Flight Detailing" data-slide="0"></button>
-        <button class="about-dot" type="button" role="tab" aria-selected="false" aria-label="Mobile detailing unit" data-slide="1"></button>
       </div>
     </div>
   </div>
@@ -3976,40 +3932,6 @@ window.addEventListener('appinstalled', () => {
   installBtn.style.display = 'none';
   deferredPrompt = null;
 });
-
-// ── About slider: pet service first, truck second. Auto-cycles, dots + swipe jump, hover pauses.
-(function () {
-  const slides = document.querySelector('.about-slides');
-  const dots = document.querySelectorAll('.about-dot');
-  if (!slides || !dots.length) return;
-  const HOLD = 7000;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let cur = 0, timer = null;
-  function go(i) {
-    cur = i;
-    slides.classList.toggle('show-second', i === 1);
-    dots.forEach((d, k) => {
-      d.classList.toggle('active', k === i);
-      d.setAttribute('aria-selected', k === i ? 'true' : 'false');
-    });
-  }
-  function stop() { if (timer) { clearInterval(timer); timer = null; } }
-  function start() { stop(); if (reduced) return; timer = setInterval(() => go(cur ? 0 : 1), HOLD); }
-  dots.forEach(d => d.addEventListener('click', () => { go(+d.dataset.slide); start(); }));
-  const box = slides.parentElement;
-  if (window.matchMedia('(hover: hover)').matches) {
-    box.addEventListener('mouseenter', stop);
-    box.addEventListener('mouseleave', start);
-  }
-  let x0 = null;
-  box.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive: true });
-  box.addEventListener('touchend', e => {
-    if (x0 === null) return;
-    const dx = e.changedTouches[0].clientX - x0; x0 = null;
-    if (Math.abs(dx) > 40) { go(dx < 0 ? 1 : 0); start(); }
-  }, { passive: true });
-  start();
-})();
 
 // ── Before/after sliders (jet + yacht): drag or arrow keys. While idle each one "dances": out
 //    toward the nose/bow, back, then smaller swings each way before settling, rests, and repeats.
