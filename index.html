@@ -373,59 +373,20 @@ section {
   transform: scale(1.02);
 }
 
-/* light catching the gold crest: a streak masked to the logo's own shape */
+/* the crest catches the light on arrival, then every 3 seconds */
 .logo-glint {
   position: relative;
   display: inline-block;
   line-height: 0;
+  animation: logoGleam 3s 0.6s ease-in-out infinite;
 }
-
-/* every few seconds the crest catches the light: a quick brighten with a warm gold halo */
-.logo-glint { animation: logoGleam 6.5s 2.2s ease-in-out infinite; }
 
 @keyframes logoGleam {
-  0%, 78%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(255, 214, 120, 0)); }
-  87%           { filter: brightness(1.32) drop-shadow(0 0 22px rgba(255, 210, 110, 0.5)); }
-}
-
-/* arrival: the hero jet starts hazy and a light wipe cleans it left to right */
-.hero-haze {
-  position: absolute;
-  inset: 0;
-  background: inherit;
-  filter: blur(1.5px) brightness(0.72) saturate(0.25) contrast(0.82) sepia(0.25);
-  clip-path: inset(0 0 0 0);
-  animation: heroClean 1.7s 0.4s cubic-bezier(0.6, 0, 0.3, 1) forwards;
-}
-
-.hero-wipe {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -25%;
-  width: 22%;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(255, 238, 190, 0.1) 30%, rgba(255, 255, 255, 0.22) 50%, rgba(255, 238, 190, 0.1) 70%, transparent);
-  transform: skewX(-12deg);
-  mix-blend-mode: screen;
-  opacity: 0;
-  animation: heroWipe 1.7s 0.4s cubic-bezier(0.6, 0, 0.3, 1) forwards;
-}
-
-@keyframes heroClean {
-  to { clip-path: inset(0 0 0 100%); }
-}
-
-@keyframes heroWipe {
-  0%   { left: -25%; opacity: 0; }
-  12%  { opacity: 1; }
-  85%  { opacity: 1; }
-  100% { left: 105%; opacity: 0; }
+  0%, 55%, 100% { filter: brightness(1) drop-shadow(0 0 0 rgba(255, 214, 120, 0)); }
+  25%           { filter: brightness(1.32) drop-shadow(0 0 22px rgba(255, 210, 110, 0.5)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-haze, .hero-wipe { display: none; }
   .logo-glint { animation: none; }
 }
 
@@ -3282,8 +3243,7 @@ section[id] { scroll-margin-top: 180px; }
 
 <!-- ═══════════ HERO ═══════════ -->
 <section class="hero" id="hero">
-  <div class="hero-bg"><div class="hero-haze"></div></div>
-  <div class="hero-wipe" aria-hidden="true"></div>
+  <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
   <div class="hero-glow"></div>
   <div class="particle-field" id="particles"></div>
