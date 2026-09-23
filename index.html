@@ -1176,7 +1176,46 @@ section {
   transition: transform 6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.yacht-photo:hover img { transform: scale(1.06); }
+/* slow drift, like the boat riding a swell */
+.yacht-photo img { animation: yachtDrift 18s ease-in-out infinite alternate; }
+
+@keyframes yachtDrift {
+  0%   { transform: scale(1.05) translate(-1%, -1.2%); }
+  100% { transform: scale(1.08) translate(1%, 1%); }
+}
+
+/* light glinting on the water: two layers of soft highlights drifting against each other */
+.yacht-water {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.yacht-water::before,
+.yacht-water::after {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background-image:
+    radial-gradient(ellipse 34px 7px at 30% 40%, rgba(255, 255, 255, 0.9), transparent 70%),
+    radial-gradient(ellipse 22px 5px at 75% 70%, rgba(255, 255, 255, 0.8), transparent 70%),
+    radial-gradient(ellipse 46px 9px at 55% 15%, rgba(255, 255, 255, 0.6), transparent 70%);
+  background-size: 190px 120px;
+  animation: waterGlint 16s linear infinite;
+  opacity: 0.55;
+}
+
+.yacht-water::after {
+  background-size: 270px 170px;
+  animation: waterGlint2 23s linear infinite, glintPulse 5s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+@keyframes waterGlint  { to { transform: translate(190px, 120px); } }
+@keyframes waterGlint2 { to { transform: translate(-270px, 170px); } }
+@keyframes glintPulse  { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.5; } }
 
 .yacht-photo::after {
   content: '';
@@ -1245,9 +1284,167 @@ section {
   margin-bottom: 22px;
 }
 
+/* before / after slider */
+.ba { margin-top: 72px; }
+
+.ba-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.ba-kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.ba-hint {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 20px;
+  color: var(--white-dim);
+}
+
+.ba-frame {
+  --pos: 50%;
+  position: relative;
+  aspect-ratio: 1300 / 693;
+  overflow: hidden;
+  border: 1px solid rgba(198, 162, 75, 0.3);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(198, 162, 75, 0.05);
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.ba-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.ba-before {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+}
+
+/* oxidized: flat, yellowed, chalky */
+.ba-before .ba-img { filter: saturate(0.3) sepia(0.45) contrast(0.72) brightness(0.88); }
+
+.ba-before::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, rgba(225, 215, 185, 0.22), rgba(170, 150, 110, 0.28));
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.ba-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--pos);
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(transparent, var(--gold) 10%, var(--gold) 90%, transparent);
+  box-shadow: 0 0 14px rgba(198, 162, 75, 0.7);
+  pointer-events: none;
+}
+
+.ba-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: rgba(11, 26, 11, 0.85);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 1;
+  box-shadow: 0 0 0 6px rgba(198, 162, 75, 0.12), 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.ba-tag {
+  position: absolute;
+  top: 16px;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.ba-tag-before {
+  left: 16px;
+  color: var(--white-dim);
+  background: rgba(11, 26, 11, 0.75);
+  border: 1px solid rgba(198, 162, 75, 0.35);
+}
+
+.ba-tag-after {
+  right: 16px;
+  color: var(--black);
+  background: var(--gold);
+}
+
+/* keyboard control; the frame itself handles mouse and touch */
+.ba-range {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ba-frame:focus-within .ba-knob { outline: 2px solid var(--gold-light); outline-offset: 4px; }
+
+.ba-note {
+  margin-top: 12px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--gray-500);
+}
+
 .yacht-cta {
   margin-top: 56px;
   text-align: center;
+}
+
+.yacht-report {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-style: italic;
+  color: var(--white-dim);
+  margin-bottom: 28px;
+}
+
+.yacht-report em { color: var(--gold-light); }
+
+@media (prefers-reduced-motion: reduce) {
+  .yacht-photo img,
+  .yacht-water::before,
+  .yacht-water::after { animation: none; }
 }
 
 .yacht-btn {
@@ -1286,6 +1483,14 @@ section {
   .yacht-card h3 { font-size: 20px; }
   .yacht-card p { font-size: 13px; }
   .yacht-cta { margin-top: 36px; }
+  .yacht-report { font-size: 18px; }
+  .ba { margin-top: 48px; }
+  .ba-head { flex-direction: column; gap: 4px; }
+  .ba-hint { font-size: 16px; }
+  .ba-knob { width: 42px; height: 42px; font-size: 17px; }
+  .ba-tag { top: 10px; padding: 5px 9px; font-size: 9px; letter-spacing: 2px; }
+  .ba-tag-before { left: 10px; }
+  .ba-tag-after { right: 10px; }
   .yacht-btn { padding: 16px 36px; }
 }
 
@@ -3126,6 +3331,7 @@ section {
   <div class="yacht-layout">
     <div class="yacht-photo reveal reveal-delay-2">
       <img src="images/yacht.jpg" alt="Motor yacht on open water, seen from above" loading="lazy">
+      <div class="yacht-water" aria-hidden="true"></div>
       <div class="yacht-tagline">Private. Professional. <span>Meticulous.</span></div>
     </div>
 
@@ -3133,34 +3339,53 @@ section {
       <div class="yacht-card reveal reveal-delay-3">
         <span class="service-icon">&#9670;</span>
         <h3>Interior Yacht Detailing</h3>
-        <p>Deep cleaning and restoration of the spaces you live and entertain in.</p>
+        <p>Salt air, sun, and a season of guests take a toll below deck. We bring the cabin back to fresh, clean, and guest-ready.</p>
         <ul class="service-feature-list">
-          <li>Upholstery &amp; fabric</li>
-          <li>Leather cleaning &amp; conditioning</li>
-          <li>Carpet &amp; flooring</li>
+          <li>Upholstery &amp; fabric deep clean</li>
+          <li>Leather cleaned &amp; conditioned</li>
+          <li>Carpet &amp; flooring restored</li>
           <li>Galley &amp; cabin detailing</li>
-          <li>Odor elimination</li>
-          <li>Glass &amp; windows</li>
+          <li>Musty odors eliminated</li>
+          <li>Streak-free glass &amp; windows</li>
         </ul>
       </div>
 
       <div class="yacht-card reveal reveal-delay-4">
         <span class="service-icon">&#10022;</span>
         <h3>Exterior Yacht Detailing</h3>
-        <p>Professional exterior care that keeps your vessel&rsquo;s finish looking new.</p>
+        <p>Chalky gelcoat, salt film, and waterline stains &mdash; gone. The finish comes back deep and glossy.</p>
         <ul class="service-feature-list">
-          <li>Hull &amp; topside wash</li>
-          <li>Stainless &amp; metal polishing</li>
-          <li>Fiberglass &amp; gelcoat care</li>
-          <li>Teak cleaning &amp; care</li>
-          <li>Exterior glass</li>
-          <li>Deck detailing</li>
+          <li>Hull &amp; topside wash &mdash; salt &amp; waterline stains</li>
+          <li>Fiberglass &amp; gelcoat &mdash; oxidation &amp; chalkiness</li>
+          <li>Stainless &amp; metal polished to a mirror</li>
+          <li>Teak cleaned back to warm honey-gold</li>
+          <li>Exterior glass, streak-free</li>
+          <li>Deck &amp; non-skid detailing</li>
         </ul>
       </div>
     </div>
   </div>
 
+  <div class="ba reveal">
+    <div class="ba-head">
+      <span class="ba-kicker">Gelcoat Restoration</span>
+      <span class="ba-hint">Drag to see the difference</span>
+    </div>
+    <div class="ba-frame">
+      <img class="ba-img" src="images/yacht-hull.jpg" alt="Yacht hull after detailing, glossy white gelcoat" loading="lazy">
+      <div class="ba-before" aria-hidden="true">
+        <img class="ba-img" src="images/yacht-hull.jpg" alt="" loading="lazy">
+      </div>
+      <span class="ba-tag ba-tag-before">Before</span>
+      <span class="ba-tag ba-tag-after">After</span>
+      <div class="ba-handle" aria-hidden="true"><span class="ba-knob">&lsaquo;&rsaquo;</span></div>
+      <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Before and after comparison">
+    </div>
+    <p class="ba-note">Illustrative &mdash; oxidized, chalky gelcoat vs. a corrected, polished finish.</p>
+  </div>
+
   <div class="yacht-cta reveal">
+    <p class="yacht-report">Every job ends with a <em>before-and-after photo report.</em></p>
     <button class="yacht-btn" type="button" onclick="openQuote('yacht')">Request a Yacht Quote</button>
   </div>
 </section>
@@ -3570,6 +3795,49 @@ window.addEventListener('appinstalled', () => {
     if (Math.abs(dx) > 40) { go(dx < 0 ? 1 : 0); start(); }
   }, { passive: true });
   start();
+})();
+
+// ── Yacht before/after slider: drag or arrow keys; sweeps once on first view so it reads as interactive
+(function () {
+  const frame = document.querySelector('.ba-frame');
+  if (!frame) return;
+  const range = frame.querySelector('.ba-range');
+  let touched = false, dragging = false;
+  const set = v => {
+    v = Math.max(0, Math.min(100, v));
+    frame.style.setProperty('--pos', v + '%');
+    range.value = Math.round(v);
+  };
+  const fromPointer = e => {
+    const r = frame.getBoundingClientRect();
+    set((e.clientX - r.left) / r.width * 100);
+  };
+  frame.addEventListener('pointerdown', e => {
+    touched = dragging = true;
+    try { frame.setPointerCapture(e.pointerId); } catch (x) {}
+    fromPointer(e);
+  });
+  frame.addEventListener('pointermove', e => { if (dragging) fromPointer(e); });
+  ['pointerup', 'pointercancel'].forEach(t => frame.addEventListener(t, () => { dragging = false; }));
+  range.addEventListener('input', () => { touched = true; set(+range.value); });
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const io = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    io.disconnect();
+    const keys = [50, 80, 22, 50], seg = 750, t0 = performance.now() + 500;
+    const step = now => {
+      if (touched) return;
+      const t = Math.max(0, now - t0);
+      const i = Math.min(keys.length - 2, Math.floor(t / seg));
+      const k = Math.min(1, (t - i * seg) / seg);
+      const ease = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      set(keys[i] + (keys[i + 1] - keys[i]) * ease);
+      if (t < seg * (keys.length - 1)) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, { threshold: 0.5 });
+  io.observe(frame);
 })();
 
 // ── PWA Service Worker
