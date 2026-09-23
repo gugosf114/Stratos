@@ -1296,6 +1296,8 @@ section {
 }
 
 /* before / after slider */
+.services .ba { margin-bottom: 56px; }
+
 .ba {
   max-width: 860px;
   margin: 72px auto 0;
@@ -1327,7 +1329,7 @@ section {
 .ba-frame {
   --pos: 50%;
   position: relative;
-  aspect-ratio: 1300 / 693;
+  aspect-ratio: var(--ratio, 1300 / 693);
   overflow: hidden;
   border: 1px solid rgba(198, 162, 75, 0.3);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(198, 162, 75, 0.05);
@@ -3487,6 +3489,24 @@ section[id] { scroll-margin-top: 180px; }
     </div>
   </div>
 
+  <div class="ba reveal">
+    <div class="ba-head">
+      <span class="ba-kicker">Exterior Restoration</span>
+      <span class="ba-hint">Drag to see the difference</span>
+    </div>
+    <div class="ba-frame" style="--ratio: 1024 / 462">
+      <img class="ba-img" src="images/jet-exterior.jpg" alt="Gulfstream after detailing, polished paint" loading="lazy">
+      <div class="ba-before" aria-hidden="true">
+        <img class="ba-img" src="images/jet-exterior.jpg" alt="" loading="lazy">
+      </div>
+      <span class="ba-tag ba-tag-before">Before</span>
+      <span class="ba-tag ba-tag-after">After</span>
+      <div class="ba-handle" aria-hidden="true"><span class="ba-knob">&lsaquo;&rsaquo;</span></div>
+      <input class="ba-range" type="range" min="0" max="100" value="50" aria-label="Before and after comparison">
+    </div>
+    <p class="ba-note">Illustrative &mdash; dull, oxidized paint vs. a corrected, polished finish.</p>
+  </div>
+
   <div class="service-feature reveal reveal-delay-2">
     <div class="service-feature-intro">
       <span class="service-icon">&#10070;</span>
@@ -3991,12 +4011,10 @@ window.addEventListener('appinstalled', () => {
   start();
 })();
 
-// ── Yacht before/after slider: drag or arrow keys. While idle it "dances": out to the bow, back,
-//    then smaller swings each way before settling, rests, and repeats. Taking the handle stops it;
-//    it picks up again after a few seconds alone.
-(function () {
-  const frame = document.querySelector('.ba-frame');
-  if (!frame) return;
+// ── Before/after sliders (jet + yacht): drag or arrow keys. While idle each one "dances": out
+//    toward the nose/bow, back, then smaller swings each way before settling, rests, and repeats.
+//    Taking the handle stops it; it picks up again after a few seconds alone.
+document.querySelectorAll('.ba-frame').forEach(frame => {
   const range = frame.querySelector('.ba-range');
   let cur = 50, dragging = false, lastTouch = -Infinity;
   const set = v => {
@@ -4044,7 +4062,7 @@ window.addEventListener('appinstalled', () => {
     visible = entries[0].isIntersecting;
     if (visible && !raf) raf = requestAnimationFrame(tick);
   }, { threshold: 0.2 }).observe(frame);
-})();
+});
 
 // ── Section bar + side rail (phones/tablets): the bar pops up on scroll or touch once past the
 //    hero and marks the section in view; the rail shows how far down the page you are. Both
