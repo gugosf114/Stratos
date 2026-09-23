@@ -1,0 +1,51 @@
+# Deploys the website chat concierge (function/) to Cloud Functions whenever it
+# changes on main. Settings mirror the live stratos-chat-v1 so a deploy only
+# swaps the code; the Anthropic key and Vapi secret stay in Secret Manager.
+name: Deploy chat function
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'function/**'
+      - '.github/workflows/deploy-chat.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency: deploy-chat
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/787543109204/locations/global/workloadIdentityPools/github/providers/stratos-repo
+          service_account: claude-stratos@bakers-agent.iam.gserviceaccount.com
+
+      - uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: bakers-agent
+
+      - name: Deploy stratos-chat-v1
+        run: |
+          gcloud functions deploy stratos-chat-v1 \
+            --gen2 --region=us-central1 --runtime=nodejs20 \
+            --entry-point=stratosChat --source=function \
+            --trigger-http --allow-unauthenticated \
+            --memory=256Mi --timeout=60s --max-instances=5 \
+            --service-account=787543109204-compute@developer.gserviceaccount.com \
+            --set-secrets=ANTHROPIC_API_KEY=stratos-anthropic-key:latest,VAPI_WEBHOOK_SECRET=stratos-vapi-webhook-secret:latest \
+            --quiet
+
+      - name: Smoke test
+        run: |
+          reply=$(curl -sS -X POST https://us-central1-bakers-agent.cloudfunctions.net/stratos-chat-v1 \
+            -H 'Content-Type: application/json' -d '{"message":"Do you detail yachts?"}')
+          echo "$reply"
+          echo "$reply" | grep -q '"reply"'
