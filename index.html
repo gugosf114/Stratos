@@ -1159,32 +1159,137 @@ section {
 }
 
 .yacht-photo {
+  --zoom: 1.4;
   position: relative;
   overflow: hidden;
+  container-type: size;
   min-height: 560px;
   border: 1px solid rgba(198, 162, 75, 0.3);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(198, 162, 75, 0.05);
 }
 
-.yacht-photo img {
+/* The scene keeps the photo's 4:5 shape so the overlays stay pinned to the yacht,
+   and is sized to cover the frame whatever its shape. Yacht sits at ~50% / 52%. */
+.yacht-scene {
+  --w: max(100cqw, 80cqh);
+  position: absolute;
+  width: var(--w);
+  height: calc(var(--w) * 1.25);
+  left: calc(50cqw - var(--w) / 2);
+  top: calc(50cqh - var(--w) * 0.625);
+  transform-origin: 50.2% 52%;
+  animation: yachtZoom 26s ease-in-out infinite;
+}
+
+.yacht-scene img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   filter: saturate(0.9);
-  transition: transform 6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* slow drift, like the boat riding a swell */
-.yacht-photo img { animation: yachtDrift 18s ease-in-out infinite alternate; }
-
-@keyframes yachtDrift {
-  0%   { transform: scale(1.05) translate(-1%, -1.2%); }
-  100% { transform: scale(1.08) translate(1%, 1%); }
+/* in close, hold while the fin makes its lap, back out */
+@keyframes yachtZoom {
+  0%, 100% { transform: scale(1.03); }
+  32%, 70% { transform: scale(var(--zoom)); }
 }
 
-/* light glinting on the water: two layers of soft highlights drifting against each other */
+/* rings spreading off the hull */
+.yacht-ripples {
+  position: absolute;
+  left: 50.2%;
+  top: 52%;
+  width: 11%;
+  height: 30%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.yacht-ripples span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  animation: ripple 7.5s ease-out infinite;
+}
+
+.yacht-ripples span:nth-child(2) { animation-delay: 2.5s; }
+.yacht-ripples span:nth-child(3) { animation-delay: 5s; }
+
+@keyframes ripple {
+  0%   { transform: scale(0.95); opacity: 0; }
+  12%  { opacity: 0.8; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+/* a shark fin circling the yacht, once per zoom */
+.shark-orbit {
+  position: absolute;
+  left: 50.2%;
+  top: 52%;
+  width: 36%;
+  aspect-ratio: 1;
+  margin-left: -18%;
+  margin-top: -18%;
+  pointer-events: none;
+  animation: sharkOrbit 26s linear infinite;
+}
+
+.shark {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 11%;
+  aspect-ratio: 24 / 21;
+  transform: translate(-50%, -80%);
+  opacity: 0;
+  animation: sharkShow 26s linear infinite;
+}
+
+.shark-fin {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: finUpright 26s linear infinite;
+}
+
+/* foam trailing behind the fin; turns with the orbit so it always points back along the path */
+.shark-wake {
+  position: absolute;
+  right: 45%;
+  top: 72%;
+  width: 380%;
+  height: 70%;
+  transform: translateY(-50%);
+  clip-path: polygon(100% 50%, 0 0, 0 100%);
+  background: linear-gradient(to left, rgba(255, 255, 255, 0.55), transparent);
+}
+
+@keyframes sharkOrbit {
+  0%, 36%   { transform: rotate(0deg); }
+  68%, 100% { transform: rotate(360deg); }
+}
+
+@keyframes sharkShow {
+  0%, 36%   { opacity: 0; }
+  40%, 64%  { opacity: 0.9; }
+  68%, 100% { opacity: 0; }
+}
+
+/* keep the fin upright and facing its direction of travel */
+@keyframes finUpright {
+  0%, 36%   { transform: rotate(0deg) scaleX(1); }
+  44%       { transform: rotate(-90deg) scaleX(1); }
+  44.01%    { transform: rotate(-90deg) scaleX(-1); }
+  60%       { transform: rotate(-270deg) scaleX(-1); }
+  60.01%    { transform: rotate(-270deg) scaleX(1); }
+  68%, 100% { transform: rotate(-360deg) scaleX(1); }
+}
+
+/* faint light glinting on the water */
 .yacht-water {
   position: absolute;
   inset: 0;
@@ -1204,18 +1309,18 @@ section {
     radial-gradient(ellipse 46px 9px at 55% 15%, rgba(255, 255, 255, 0.6), transparent 70%);
   background-size: 190px 120px;
   animation: waterGlint 16s linear infinite;
-  opacity: 0.55;
+  opacity: 0.35;
 }
 
 .yacht-water::after {
   background-size: 270px 170px;
   animation: waterGlint2 23s linear infinite, glintPulse 5s ease-in-out infinite;
-  opacity: 0.4;
+  opacity: 0.25;
 }
 
 @keyframes waterGlint  { to { transform: translate(190px, 120px); } }
 @keyframes waterGlint2 { to { transform: translate(-270px, 170px); } }
-@keyframes glintPulse  { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.5; } }
+@keyframes glintPulse  { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.35; } }
 
 .yacht-photo::after {
   content: '';
@@ -1285,7 +1390,10 @@ section {
 }
 
 /* before / after slider */
-.ba { margin-top: 72px; }
+.ba {
+  max-width: 860px;
+  margin: 72px auto 0;
+}
 
 .ba-head {
   display: flex;
@@ -1442,9 +1550,11 @@ section {
 .yacht-report em { color: var(--gold-light); }
 
 @media (prefers-reduced-motion: reduce) {
-  .yacht-photo img,
+  .yacht-scene,
+  .yacht-ripples span,
   .yacht-water::before,
   .yacht-water::after { animation: none; }
+  .shark-orbit { display: none; }
 }
 
 .yacht-btn {
@@ -1472,12 +1582,12 @@ section {
 
 @media (max-width: 1024px) {
   .yacht-layout { grid-template-columns: 1fr; gap: 32px; }
-  .yacht-photo { min-height: 420px; }
+  .yacht-photo { min-height: 0; height: 420px; --zoom: 1.08; }
 }
 
 @media (max-width: 640px) {
   .yacht-layout { margin-top: 40px; gap: 16px; }
-  .yacht-photo { min-height: 320px; }
+  .yacht-photo { height: 340px; --zoom: 1.18; }
   .yacht-tagline { font-size: 21px; left: 22px; right: 22px; bottom: 20px; }
   .yacht-card { padding: 32px 24px; }
   .yacht-card h3 { font-size: 20px; }
@@ -3330,8 +3440,17 @@ section {
 
   <div class="yacht-layout">
     <div class="yacht-photo reveal reveal-delay-2">
-      <img src="images/yacht.jpg" alt="Motor yacht on open water, seen from above" loading="lazy">
-      <div class="yacht-water" aria-hidden="true"></div>
+      <div class="yacht-scene">
+        <img src="images/yacht.jpg" alt="Motor yacht on open water, seen from above" loading="lazy">
+        <div class="yacht-ripples" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="shark-orbit" aria-hidden="true">
+          <div class="shark">
+            <span class="shark-wake"></span>
+            <svg class="shark-fin" viewBox="0 0 24 21"><ellipse cx="13" cy="19.5" rx="12" ry="2" fill="rgba(255,255,255,0.65)"/><path d="M2 19.5 C6 15 7 8 7 1 C13 4 20 12 24 19.5 Z" fill="#1d2b33"/><path d="M7 1 C13 4 20 12 24 19.5" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.8"/></svg>
+          </div>
+        </div>
+        <div class="yacht-water" aria-hidden="true"></div>
+      </div>
       <div class="yacht-tagline">Private. Professional. <span>Meticulous.</span></div>
     </div>
 
@@ -3797,47 +3916,51 @@ window.addEventListener('appinstalled', () => {
   start();
 })();
 
-// ── Yacht before/after slider: drag or arrow keys; sweeps once on first view so it reads as interactive
+// ── Yacht before/after slider: drag or arrow keys. While idle it glides toward the bow and back;
+//    someone taking the handle stops it, and it picks up again after a few seconds alone.
 (function () {
   const frame = document.querySelector('.ba-frame');
   if (!frame) return;
   const range = frame.querySelector('.ba-range');
-  let touched = false, dragging = false;
+  let cur = 50, dragging = false, lastTouch = -Infinity;
   const set = v => {
-    v = Math.max(0, Math.min(100, v));
-    frame.style.setProperty('--pos', v + '%');
-    range.value = Math.round(v);
+    cur = Math.max(0, Math.min(100, v));
+    frame.style.setProperty('--pos', cur + '%');
+    range.value = Math.round(cur);
   };
   const fromPointer = e => {
     const r = frame.getBoundingClientRect();
     set((e.clientX - r.left) / r.width * 100);
   };
   frame.addEventListener('pointerdown', e => {
-    touched = dragging = true;
+    dragging = true;
+    lastTouch = performance.now();
     try { frame.setPointerCapture(e.pointerId); } catch (x) {}
     fromPointer(e);
   });
-  frame.addEventListener('pointermove', e => { if (dragging) fromPointer(e); });
-  ['pointerup', 'pointercancel'].forEach(t => frame.addEventListener(t, () => { dragging = false; }));
-  range.addEventListener('input', () => { touched = true; set(+range.value); });
+  frame.addEventListener('pointermove', e => { if (dragging) { lastTouch = performance.now(); fromPointer(e); } });
+  ['pointerup', 'pointercancel'].forEach(t => frame.addEventListener(t, () => { dragging = false; lastTouch = performance.now(); }));
+  range.addEventListener('input', () => { lastTouch = performance.now(); set(+range.value); });
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const io = new IntersectionObserver(entries => {
-    if (!entries[0].isIntersecting) return;
-    io.disconnect();
-    const keys = [50, 80, 22, 50], seg = 750, t0 = performance.now() + 500;
-    const step = now => {
-      if (touched) return;
-      const t = Math.max(0, now - t0);
-      const i = Math.min(keys.length - 2, Math.floor(t / seg));
-      const k = Math.min(1, (t - i * seg) / seg);
-      const ease = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-      set(keys[i] + (keys[i + 1] - keys[i]) * ease);
-      if (t < seg * (keys.length - 1)) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, { threshold: 0.5 });
-  io.observe(frame);
+  const PERIOD = 8000, RESUME_AFTER = 5000, CENTER = 50, SWING = 24;
+  let visible = false, raf = null, t0 = null;
+  const tick = now => {
+    raf = null;
+    if (!visible) return;
+    if (!dragging && now - lastTouch > RESUME_AFTER) {
+      if (t0 === null) t0 = now;
+      const target = CENTER + SWING * Math.sin((now - t0) / PERIOD * 2 * Math.PI);
+      set(cur + (target - cur) * 0.08); // ease in rather than jump after a hand-off
+    } else {
+      t0 = null;
+    }
+    raf = requestAnimationFrame(tick);
+  };
+  new IntersectionObserver(entries => {
+    visible = entries[0].isIntersecting;
+    if (visible && !raf) raf = requestAnimationFrame(tick);
+  }, { threshold: 0.2 }).observe(frame);
 })();
 
 // ── PWA Service Worker
