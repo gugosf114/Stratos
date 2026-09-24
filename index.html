@@ -4110,7 +4110,7 @@ document.querySelectorAll('.ba-frame').forEach(frame => {
   };
   const spy = () => {
     const line = window.innerHeight * 0.45;
-    let current = null;
+    let current = links[0]; // About is gold from the moment the page opens
     targets.forEach((t, i) => { if (t && t.getBoundingClientRect().top <= line) current = links[i]; });
     setActive(current);
     drawRail();
