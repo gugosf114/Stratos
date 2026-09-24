@@ -2117,7 +2117,7 @@ section {
 
 /* ═══════════════════════════════════════════
    SECTION BAR — phones/tablets, where the top nav links are hidden.
-   Pops up from the bottom while scrolling and marks the section in view.
+   Always visible at the bottom and marks the section in view.
    ═══════════════════════════════════════════ */
 .section-bar,
 .scroll-rail { display: none; }
@@ -3227,7 +3227,7 @@ section[id] { scroll-margin-top: 180px; }
 </nav>
 
 <!-- Section bar (phones/tablets) -->
-<nav class="section-bar" id="sectionBar" aria-label="Sections">
+<nav class="section-bar show" id="sectionBar" aria-label="Sections">
   <span class="section-bar-pill" aria-hidden="true"></span>
   <a href="#about">About</a>
   <a href="#locations">Locations</a>
@@ -4115,12 +4115,11 @@ document.querySelectorAll('.ba-frame').forEach(frame => {
     setActive(current);
     drawRail();
   };
+  // The bar stays up at all times; only the side rail settles back after a few quiet seconds.
   const show = () => {
-    const pastHero = window.scrollY > window.innerHeight * 0.6;
-    bar.classList.toggle('show', pastHero);
     rail.classList.add('show');
     clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => { bar.classList.remove('show'); rail.classList.remove('show'); }, HIDE_AFTER);
+    hideTimer = setTimeout(() => { rail.classList.remove('show'); }, HIDE_AFTER);
   };
 
   window.addEventListener('scroll', () => { spy(); show(); }, { passive: true });
