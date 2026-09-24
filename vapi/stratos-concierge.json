@@ -1,0 +1,35 @@
+{
+  "_note": "Copy of the Vapi phone assistant \"Stratos Concierge\" (id 501e9d4a-3e9b-47a5-a545-2801dc447c46, number +1 424-464-8833). The live brain is in Vapi; this is a backup. Server URL left out on purpose (it carries the webhook token).",
+  "savedAt": "2026-09-24T08:51:25.531Z",
+  "name": "Stratos Concierge",
+  "firstMessage": "Thank you for calling Stratos Aviation Detailing. How may I help with your aircraft or yacht today?",
+  "endCallMessage": "Thank you for calling Stratos. We'll be in touch shortly.",
+  "voicemailMessage": "Hello, this is Riley from Wellness Partners. I'm calling about your appointment. Please call us back at your earliest convenience so we can confirm your scheduling details.",
+  "endCallPhrases": [
+    "goodbye",
+    "talk to you soon"
+  ],
+  "voice": {
+    "model": "eleven_flash_v2_5",
+    "voiceId": "sarah",
+    "provider": "11labs",
+    "stability": 0.5,
+    "similarityBoost": 0.75
+  },
+  "transcriber": {
+    "model": "nova-3",
+    "language": "en",
+    "provider": "deepgram",
+    "endpointing": 150,
+    "fallbackPlan": {
+      "autoFallback": {
+        "enabled": true
+      }
+    }
+  },
+  "model": {
+    "model": "claude-sonnet-4-6",
+    "provider": "anthropic",
+    "temperature": 0.5
+  }
+}
