@@ -2766,7 +2766,7 @@ section[id] { scroll-margin-top: 180px; }
   /* Pulsating Yellow Glow */
   @keyframes stratosPulse {
     0% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0.6); }
-    70% { box-shadow: 0 0 0 15px rgba(241, 196, 15, 0); }
+    70% { box-shadow: 0 0 0 12px rgba(241, 196, 15, 0); }
     100% { box-shadow: 0 0 0 0 rgba(241, 196, 15, 0); }
   }
 
@@ -2779,8 +2779,8 @@ section[id] { scroll-margin-top: 180px; }
     z-index: 9999;
     /* Container sized to the button only — tooltip is absolute-positioned
        to the left, so its visibility can't shift the button. */
-    width: 60px;
-    height: 60px;
+    width: 48px;
+    height: 48px;
     touch-action: none; /* Prevents screen scrolling while dragging on mobile */
   }
 
@@ -2811,9 +2811,10 @@ section[id] { scroll-margin-top: 180px; }
     color: #fff;
     border: 2px solid #f1c40f; /* Yellow accent ring */
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
+    width: 48px;
+    height: 48px;
+    font-size: 19px;
+    padding: 0;
     cursor: grab;
     display: flex;
     align-items: center;
@@ -2829,8 +2830,8 @@ section[id] { scroll-margin-top: 180px; }
   #stratos-chat-window {
     position: fixed;
     /* Sits just above the bubble; the 10px gap keeps them visually linked.
-       Bubble is at bottom:110 with height 60, +10 gap = 180. */
-    bottom: 180px;
+       Bubble is at bottom:110 with height 48, +10 gap = 168. */
+    bottom: 168px;
     right: 20px;
     width: 350px;
     height: 450px;
@@ -2924,6 +2925,21 @@ section[id] { scroll-margin-top: 180px; }
   }
   @keyframes stratosCaretBlink {
     to { visibility: hidden; }
+  }
+
+  /* Phones and tablets: the bubble starts top-left, just under the ticker bar,
+     and the typewriter pill reads to its right. Desktop keeps bottom-right. */
+  @media (max-width: 1024px) {
+    #stratos-chat-container {
+      top: 80px;
+      left: 20px;
+      bottom: auto;
+      right: auto;
+    }
+    #stratos-chat-tooltip {
+      right: auto;
+      left: calc(100% + 12px);
+    }
   }
 
   /* Mobile: let chat window span the viewport instead of clipping off-screen */
